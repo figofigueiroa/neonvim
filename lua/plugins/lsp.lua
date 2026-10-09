@@ -72,73 +72,61 @@ return {
               },
             },
             keys = {
-              { "<leader>cl", "<cmd>checkhealth lsp<cr>", desc = "Lsp Info" },
+              { "<leader>cl", function() Snacks.picker.lsp_config() end,          desc = "Lsp Info" },
+              { "gd",         vim.lsp.buf.definition,                             desc = "Goto Definition",            has = "definition" },
+              { "gr",         vim.lsp.buf.references,                             desc = "References",                 nowait = true },
+              { "gI",         vim.lsp.buf.implementation,                         desc = "Goto Implementation" },
+              { "gy",         vim.lsp.buf.type_definition,                        desc = "Goto T[y]pe Definition" },
+              { "gD",         vim.lsp.buf.declaration,                            desc = "Goto Declaration" },
+              { "K",          function() return vim.lsp.buf.hover() end,          desc = "Hover" },
+              { "gK",         function() return vim.lsp.buf.signature_help() end, desc = "Signature Help",             has = "signatureHelp" },
+              { "<c-k>",      function() return vim.lsp.buf.signature_help() end, mode = "i",                          desc = "Signature Help", has = "signatureHelp" },
+              { "<leader>ca", vim.lsp.buf.code_action,                            desc = "Code Action",                mode = { "n", "x" },     has = "codeAction" },
+              { "<leader>cc", vim.lsp.codelens.run,                               desc = "Run Codelens",               mode = { "n", "x" },     has = "codeLens" },
+              { "<leader>cC", vim.lsp.codelens.refresh,                           desc = "Refresh & Display Codelens", mode = { "n" },          has = "codeLens" },
+              { "<leader>cR", function() Snacks.rename.rename_file() end,         desc = "Rename File",                mode = { "n" },          has = { "workspace/didRenameFiles", "workspace/willRenameFiles" } },
+              { "<leader>cr", vim.lsp.buf.rename,                                 desc = "Rename",                     has = "rename" },
+              -- { "<leader>cA", LazyVim.lsp.action.source,                          desc = "Source Action",              has = "codeAction" },
               {
-                "gd",
-                "<cmd>FzfLua lsp_definitions<cr>",
-                desc = "Goto Definition",
-                has = "definition",
+                "]]",
+                function() Snacks.words.jump(vim.v.count1) end,
+                has = "documentHighlight",
+                desc = "Next Reference",
+                enabled = function() return Snacks.words.is_enabled() end
               },
               {
-                "gr",
-                "<cmd>FzfLua lsp_references<cr>",
-                desc = "References",
-                nowait = true,
-              },
-              { "gI", "<cmd>FzfLua lsp_implementations<cr>", desc = "Goto Implementation" },
-              { "gy", "<cmd>FzfLua lsp_typedefs<cr>", desc = "Goto T[y]pe Definition" },
-              { "gD", vim.lsp.buf.declaration, desc = "Goto Declaration" },
-              {
-                "K",
-                function()
-                  return vim.lsp.buf.hover()
-                end,
-                desc = "Hover",
+                "[[",
+                function() Snacks.words.jump(-vim.v.count1) end,
+                has = "documentHighlight",
+                desc = "Prev Reference",
+                enabled = function() return Snacks.words.is_enabled() end
               },
               {
-                "gK",
-                function()
-                  return vim.lsp.buf.signature_help()
-                end,
-                desc = "Signature Help",
-                has = "signatureHelp",
+                "<a-n>",
+                function() Snacks.words.jump(vim.v.count1, true) end,
+                has = "documentHighlight",
+                desc = "Next Reference",
+                enabled = function() return Snacks.words.is_enabled() end
               },
               {
-                "<c-k>",
-                function()
-                  return vim.lsp.buf.signature_help()
-                end,
-                mode = "i",
-                desc = "Signature Help",
-                has = "signatureHelp",
+                "<a-p>",
+                function() Snacks.words.jump(-vim.v.count1, true) end,
+                has = "documentHighlight",
+                desc = "Prev Reference",
+                enabled = function() return Snacks.words.is_enabled() end
               },
-              { "<leader>ca", vim.lsp.buf.code_action, desc = "Code Action", mode = { "n", "x" }, has = "codeAction" },
-              { "<leader>cc", vim.lsp.codelens.run, desc = "Run Codelens", mode = { "n", "x" }, has = "codeLens" },
-              {
-                "<leader>cC",
-                vim.lsp.codelens.refresh,
-                desc = "Refresh & Display Codelens",
-                mode = { "n" },
-                has = "codeLens",
-              },
-              { "<leader>cr", vim.lsp.buf.rename, desc = "Rename", has = "rename" },
-              {
-                "<leader>cA",
-                function()
-                  vim.lsp.buf.code_action({ context = { only = { "source" } } })
-                end,
-                desc = "Source Action",
-                has = "codeAction",
-              },
-              -- ponytail: sem pré-checagem de ações (LazyVim filtrava); server sem a ação → no-op
-              {
-                "<leader>co",
-                function()
-                  vim.lsp.buf.code_action({ context = { only = { "source.organizeImports" } }, apply = true })
-                end,
-                desc = "Organize Imports",
-                has = "codeAction",
-              },
+              -- {
+              --   "<leader>co",
+              --   LazyVim.lsp.action["source.organizeImports"],
+              --   desc = "Organize Imports",
+              --   has = "codeAction",
+              --   enabled = function(buf)
+              --     local code_actions = vim.tbl_filter(function(action)
+              --       return action:find("^source%.organizeImports%.?$")
+              --     end, LazyVim.lsp.code_actions({ bufnr = buf }))
+              --     return #code_actions > 0
+              --   end
+              -- },
             },
           },
           lua_ls = {
@@ -222,10 +210,10 @@ return {
 
           -- inlay hints
           if
-            opts.inlay_hints.enabled
-            and client:supports_method("textDocument/inlayHint", buf)
-            and vim.bo[buf].buftype == ""
-            and not vim.tbl_contains(opts.inlay_hints.exclude, vim.bo[buf].filetype)
+              opts.inlay_hints.enabled
+              and client:supports_method("textDocument/inlayHint", buf)
+              and vim.bo[buf].buftype == ""
+              and not vim.tbl_contains(opts.inlay_hints.exclude, vim.bo[buf].filetype)
           then
             vim.lsp.inlay_hint.enable(true, { bufnr = buf })
           end
@@ -306,4 +294,14 @@ return {
       })
     end,
   },
+  { "mason-org/mason-lspconfig.nvim", config = function() end },
+  -- lazy.nvim
+  {
+    "GustavEikaas/easy-dotnet.nvim",
+    ft = "cs",
+    dependencies = { "nvim-lua/plenary.nvim", 'folke/snacks.nvim', },
+    config = function()
+      require("easy-dotnet").setup()
+    end
+  }
 }

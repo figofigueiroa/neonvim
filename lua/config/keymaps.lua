@@ -212,10 +212,10 @@ if vim.lsp.inlay_hint then
   end, { desc = "Toggle Inlay Hints" })
 end
 
--- lazygit (split nativo; a versão flutuante exigia snacks.nvim)
-if vim.fn.executable("lazygit") == 1 then
-  map("n", "<leader>gg", "<cmd>term lazygit<cr>", { desc = "Lazygit (split)" })
-end
+-- -- lazygit (split nativo; a versão flutuante exigia snacks.nvim)
+-- if vim.fn.executable("lazygit") == 1 then
+--   map("n", "<leader>gg", "<cmd>term lazygit<cr><cmd>startinsert<cr>", { desc = "Lazygit (split)" })
+-- end
 
 -- gL/gb/gl sem equivalente (gc/gl já cobrem git_commits; blame não existe no fzf-lua)
 map("n", "<leader>gf", "<cmd>FzfLua git_bcommits<cr>", { desc = "Git Current File History" })
@@ -257,3 +257,14 @@ map("n", "<leader><tab><tab>", "<cmd>tabnew<cr>", { desc = "New Tab" })
 map("n", "<leader><tab>]", "<cmd>tabnext<cr>", { desc = "Next Tab" })
 map("n", "<leader><tab>d", "<cmd>tabclose<cr>", { desc = "Close Tab" })
 map("n", "<leader><tab>[", "<cmd>tabprevious<cr>", { desc = "Previous Tab" })
+
+-- g?: Web search
+map('n', 'g??', function()
+  vim.ui.open(('https://google.com/search?q=%s'):format(vim.fn.expand('<cword>')))
+end)
+
+map('x', 'g??', function()
+  vim.ui.open(('https://google.com/search?q=%s'):format(vim.trim(table.concat(
+    vim.fn.getregion(vim.fn.getpos('.'), vim.fn.getpos('v'), { type = vim.fn.mode() }), ' '))))
+  vim.api.nvim_input('<esc>')
+end)

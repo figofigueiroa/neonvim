@@ -6,8 +6,9 @@ return {
     opts = {
       library = {
         { path = "${3rd}/luv/library", words = { "vim%.uv" } },
-        { path = "nvim-lspconfig", words = { "lspconfig.settings" } },
-        { path = "lazy.nvim", words = { "LazyVim" } },
+        { path = "nvim-lspconfig",     words = { "lspconfig.settings" } },
+        { path = "lazy.nvim",          words = { "LazyVim" } },
+        { path = "snacks.nvim",        words = { "Snacks" } },
       },
     },
   },
@@ -93,4 +94,23 @@ return {
       signature = { enabled = true },
     },
   },
+  {
+    "folke/which-key.nvim",
+    event = "VeryLazy",
+    opts = {
+      preset = "modern",
+      -- your configuration comes here
+      -- or leave it empty to use the default settings
+      -- refer to the configuration section below
+    },
+    keys = {
+      {
+        "<leader>?",
+        function()
+          require("which-key").show({ global = false })
+        end,
+        desc = "Buffer Local Keymaps (which-key)",
+      },
+    },
+  }
 }
