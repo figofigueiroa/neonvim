@@ -6,6 +6,10 @@ local icons = {
   Info = "󰋽",
 }
 
+local U = require("config.utils")
+
+local status = {} ---@type table<number, "ok" | "error" | "pending">
+
 return {
   {
     "mason-org/mason.nvim",
@@ -234,9 +238,55 @@ return {
               },
             },
           },
+          copilot = {
+            keys = {
+              {
+                "<M-]>",
+                function()
+                  vim.lsp.inline_completion.select({ count = 1 })
+                end,
+                desc = "Next Copilot Suggestion",
+                mode = { "i", "n" },
+              },
+              {
+                "<M-[>",
+                function()
+                  vim.lsp.inline_completion.select({ count = -1 })
+                end,
+                desc = "Prev Copilot Suggestion",
+                mode = { "i", "n" },
+              },
+            },
+          },
         },
         -- setup customizado: function(server, opts) -> true pular o setup automático
-        setup = {},
+        setup = {
+          copilot = function()
+            vim.schedule(function()
+              vim.lsp.inline_completion.enable()
+            end)
+            -- Accept inline suggestions or next edits
+            U.actions.ai_accept = function()
+              return vim.lsp.inline_completion.get()
+            end
+
+            if not U.is_loaded("sidekick.nvim") then
+              vim.lsp.config("copilot", {
+                handlers = {
+                  didChangeStatus = function(err, res, ctx)
+                    if err then
+                      return
+                    end
+                    status[ctx.client_id] = res.kind ~= "Normal" and "error" or res.busy and "pending" or "ok"
+                    if res.status == "Error" then
+                      vim.notify("Please use `:LspCopilotSignIn` to sign in to Copilot", vim.log.levels.ERROR)
+                    end
+                  end,
+                },
+              })
+            end
+          end,
+        },
       }
       return ret
     end,

@@ -117,10 +117,11 @@ return {
       }):map("<leader>uN")
     end,
     -- stylua: ignore
-    keys = {
+    keys = vim.list_extend({
       -- nes is also useful in normal mode
       { "<tab>",     U.map({ "ai_nes" }, "<tab>"), mode = { "n" }, expr = true },
-      { "<leader>a", "",                           desc = "+ai",   mode = { "n", "v" } },
+      { "<leader>a", "",                           desc = "[A]i",  mode = { "n", "v" } },
+    }, not U.is_win() and {
       {
         "<c-.>",
         function() require("sidekick.cli").focus() end,
@@ -167,9 +168,8 @@ return {
         mode = { "n", "x" },
         desc = "Sidekick Select Prompt",
       },
-    },
+    } or {}),
   },
-
   {
     "neovim/nvim-lspconfig",
     opts = function(_, opts)

@@ -369,24 +369,6 @@ function M.mini.ai_whichkey(opts)
   require("which-key").add(ret, { notify = false })
 end
 
----@param what string|number|nil
----@param query? string
----@overload fun(buf?:number):boolean
----@overload fun(ft:string):boolean
----@return boolean
-function M.have(what, query)
-  what = what or vim.api.nvim_get_current_buf()
-  what = type(what) == "number" and vim.bo[what].filetype or what --[[@as string]]
-  local lang = vim.treesitter.language.get_lang(what)
-  if lang == nil or M.get_installed()[lang] == nil then
-    return false
-  end
-  if query and not M.have_query(lang, query) then
-    return false
-  end
-  return true
-end
-
 M.actions = {
   -- Native Snippets
   snippet_forward = function()

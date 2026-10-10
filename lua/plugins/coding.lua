@@ -1,3 +1,5 @@
+local U = require("config.utils")
+
 return {
   {
     "folke/lazydev.nvim",
@@ -48,6 +50,8 @@ return {
     opts = {
       keymap = {
         preset = "default",
+        -- aceita inline completion do copilot (ai_accept) ou NES (ai_nes)
+        ["<Tab>"] = { U.map({ "snippet_forward", "ai_nes", "ai_accept" }), "fallback" },
       },
 
       appearance = {
