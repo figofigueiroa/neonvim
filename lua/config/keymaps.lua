@@ -1,5 +1,7 @@
 local map = vim.keymap.set
 
+local U = require("config.utils")
+
 -- better up/down
 map({ "n", "x" }, "j", "v:count == 0 ? 'gj' : 'j'", { desc = "Down", expr = true, silent = true })
 map({ "n", "x" }, "<Down>", "v:count == 0 ? 'gj' : 'j'", { desc = "Down", expr = true, silent = true })
@@ -33,43 +35,6 @@ map("n", "[b", "<cmd>bprevious<cr>", { desc = "Prev Buffer" })
 map("n", "]b", "<cmd>bnext<cr>", { desc = "Next Buffer" })
 map("n", "<leader>bb", "<cmd>e #<cr>", { desc = "Switch to Other Buffer" })
 map("n", "<leader>`", "<cmd>e #<cr>", { desc = "Switch to Other Buffer" })
--- ponytail: pula buffers modificados (use <leader>bD para forçar); não restaura layout prévio das janelas
-local bufdelete = function(buf)
-  if not buf or buf == 0 then
-    buf = vim.api.nvim_get_current_buf()
-  end
-  if vim.bo[buf].modified then
-    return
-  end
-  for _, win in ipairs(vim.fn.win_findbuf(buf)) do
-    vim.api.nvim_win_call(win, function()
-      if not pcall(vim.cmd, "bprevious") then
-        vim.cmd("enew")
-      end
-    end)
-  end
-  pcall(vim.api.nvim_buf_delete, buf, {})
-end
-
-map("n", "<leader>bd", function()
-  bufdelete(0)
-end, { desc = "Delete Buffer" })
-map("n", "<leader>bo", function()
-  local cur = vim.api.nvim_get_current_buf()
-  for _, b in ipairs(vim.api.nvim_list_bufs()) do
-    if b ~= cur and vim.bo[b].listed then
-      bufdelete(b)
-    end
-  end
-end, { desc = "Delete Other Buffers" })
-map("n", "<leader>bi", function()
-  for _, b in ipairs(vim.api.nvim_list_bufs()) do
-    if vim.bo[b].listed and #vim.fn.win_findbuf(b) == 0 then
-      bufdelete(b)
-    end
-  end
-end, { desc = "Delete Invisible Buffers" })
-map("n", "<leader>bD", "<cmd>:bd<cr>", { desc = "Delete Buffer and Window" })
 
 -- Clear search and stop snippet on escape
 map({ "i", "n", "s" }, "<esc>", function()
@@ -227,19 +192,9 @@ map("n", "<leader>-", "<C-W>s", { desc = "Split Window Below", remap = true })
 map("n", "<leader>|", "<C-W>v", { desc = "Split Window Right", remap = true })
 map("n", "<leader>wd", "<C-W>c", { desc = "Delete Window", remap = true })
 
--- ponytail: wincmd = equaliza os splits, não restaura os tamanhos exatos pré-zoom
-local zoom = function()
-  if vim.t.zoomed then
-    vim.cmd("wincmd =")
-    vim.t.zoomed = nil
-  else
-    vim.cmd("wincmd |")
-    vim.cmd("wincmd _")
-    vim.t.zoomed = true
-  end
-end
-map("n", "<leader>wm", zoom, { desc = "Zoom Window" })
-map("n", "<leader>uZ", zoom, { desc = "Zoom Window" })
+map("n", "<leader>wm", function()
+  Snacks.zen.zoom()
+end, { desc = "Zoom Window" })
 
 -- tabs
 map("n", "<leader><tab>l", "<cmd>tablast<cr>", { desc = "Last Tab" })
@@ -253,7 +208,7 @@ map("n", "<leader><tab>[", "<cmd>tabprevious<cr>", { desc = "Previous Tab" })
 -- g?: Web search
 map("n", "g??", function()
   vim.ui.open(("https://google.com/search?q=%s"):format(vim.fn.expand("<cword>")))
-end)
+end, { desc = "Google Fu" })
 
 map("x", "g??", function()
   vim.ui.open(
@@ -262,4 +217,37 @@ map("x", "g??", function()
     )
   )
   vim.api.nvim_input("<esc>")
-end)
+end, { desc = "Google Fu Selection" })
+
+vim.keymap.set("n", "m", function()
+  local char = vim.fn.getcharstr()
+  vim.cmd("normal! m" .. char)
+  U.refresh_marks()
+end, { desc = "Set mark (and show in statuscolumn)" })
+
+-- <leader>m{letra}  → apaga essa mark
+-- <leader>m<Space>  → apaga as marks da linha atual
+-- <leader>m-        → apaga todas as marks do buffer (a-z e A-Z que apontam pra ele)
+vim.keymap.set("n", "<leader>m", function()
+  local char = vim.fn.getcharstr()
+  local buf = vim.api.nvim_get_current_buf()
+
+  if char == "-" then
+    vim.cmd("delmarks!") -- a-z do buffer atual
+    for _, m in ipairs(vim.fn.getmarklist()) do
+      local name = m.mark:sub(2)
+      if name:match("^%u$") and m.pos[1] == buf then
+        vim.cmd("delmarks " .. name)
+      end
+    end
+  elseif char == " " then
+    local marks = U.marks_on_line(buf)
+    if #marks > 0 then
+      vim.cmd("delmarks " .. table.concat(marks))
+    end
+  else
+    pcall(vim.cmd, "delmarks " .. char)
+  end
+
+  U.refresh_marks(buf)
+end, { desc = "Delete mark(s)" })

@@ -1,4 +1,5 @@
 -- This file is automatically loaded by lazyvim.config.init.
+local U = require("config.utils")
 
 local function augroup(name)
   return vim.api.nvim_create_augroup("figo_" .. name, { clear = true })
@@ -263,27 +264,27 @@ vim.api.nvim_create_autocmd(events, {
 
 -- Grupos de keyword do treesitter + grupos legados (syntax regex)
 local keyword_groups = {
-  '@keyword',
-  '@keyword.coroutine',
-  '@keyword.function',
-  '@keyword.operator',
-  '@keyword.import',
-  '@keyword.type',
-  '@keyword.modifier',
-  '@keyword.repeat',
-  '@keyword.return',
-  '@keyword.debug',
-  '@keyword.exception',
-  '@keyword.conditional',
-  '@keyword.conditional.ternary',
-  '@keyword.directive',
-  '@keyword.directive.define',
-  'Keyword',
-  'Statement',
-  'Conditional',
-  'Repeat',
-  'Exception',
-  'Include',
+  "@keyword",
+  "@keyword.coroutine",
+  "@keyword.function",
+  "@keyword.operator",
+  "@keyword.import",
+  "@keyword.type",
+  "@keyword.modifier",
+  "@keyword.repeat",
+  "@keyword.return",
+  "@keyword.debug",
+  "@keyword.exception",
+  "@keyword.conditional",
+  "@keyword.conditional.ternary",
+  "@keyword.directive",
+  "@keyword.directive.define",
+  "Keyword",
+  "Statement",
+  "Conditional",
+  "Repeat",
+  "Exception",
+  "Include",
 }
 
 -- Definição efetiva do grupo, subindo na hierarquia se não existir
@@ -291,39 +292,41 @@ local keyword_groups = {
 local function resolve_hl(name)
   while name do
     local hl = vim.api.nvim_get_hl(0, { name = name, link = false, create = false })
-    if next(hl) then return hl end
-    name = name:match '^(.*)%.[^.]+$'
+    if next(hl) then
+      return hl
+    end
+    name = name:match("^(.*)%.[^.]+$")
   end
   return {}
 end
 
 -- nvim_set_hl SUBSTITUI o grupo inteiro; isto mescla só o que você passar
 local function extend_hl(name, attrs)
-  local hl = vim.tbl_deep_extend('force', resolve_hl(name), attrs)
+  local hl = vim.tbl_deep_extend("force", resolve_hl(name), attrs)
   ---@cast hl vim.api.keyset.highlight
   vim.api.nvim_set_hl(0, name, hl)
 end
 
 local function habamax_overrides()
   -- Fundo transparente, preservando o fg do habamax
-  extend_hl('Normal', { bg = 'NONE', ctermbg = 'NONE' })
-  vim.api.nvim_set_hl(0, 'NormalFloat', { link = 'Normal' })
-  vim.api.nvim_set_hl(0, 'FloatBorder', { fg = '#767676', bg = 'NONE' })
-  vim.api.nvim_set_hl(0, 'VertSplit', { fg = '#767676', bg = 'NONE' })
+  extend_hl("Normal", { bg = "NONE", ctermbg = "NONE" })
+  vim.api.nvim_set_hl(0, "NormalFloat", { link = "Normal" })
+  vim.api.nvim_set_hl(0, "FloatBorder", { fg = "#767676", bg = "NONE" })
+  vim.api.nvim_set_hl(0, "VertSplit", { fg = "#767676", bg = "NONE" })
 
-  vim.api.nvim_set_hl(0, 'TabLineSel', { link = 'PmenuSel' })
-  vim.api.nvim_set_hl(0, 'TabLine', { link = 'StatusLineNC' })
-  vim.api.nvim_set_hl(0, 'TabLineFill', { link = 'StatusLineNC' })
+  vim.api.nvim_set_hl(0, "TabLineSel", { link = "PmenuSel" })
+  vim.api.nvim_set_hl(0, "TabLine", { link = "StatusLineNC" })
+  vim.api.nvim_set_hl(0, "TabLineFill", { link = "StatusLineNC" })
 
   -- Diffs mais legíveis que os do habamax (#274733/#373737/#2f1f1a); o neogit
   -- deriva os fundos dos diffs dele (line_green/line_red) do bg de
   -- DiffAdd/DiffDelete, e o codediff linka direto nesses grupos.
-  vim.api.nvim_set_hl(0, 'DiffAdd', { bg = '#2e5c46', ctermbg = 22 })
-  vim.api.nvim_set_hl(0, 'DiffChange', { bg = '#39434f', ctermbg = 238 })
-  vim.api.nvim_set_hl(0, 'DiffDelete', { bg = '#462626', fg = '#d78787', ctermbg = 52, ctermfg = 138 })
-  vim.api.nvim_set_hl(0, 'DiffText', { bg = '#1c6a75', ctermbg = 30 })
+  vim.api.nvim_set_hl(0, "DiffAdd", { bg = "#2e5c46", ctermbg = 22 })
+  vim.api.nvim_set_hl(0, "DiffChange", { bg = "#39434f", ctermbg = 238 })
+  vim.api.nvim_set_hl(0, "DiffDelete", { bg = "#462626", fg = "#d78787", ctermbg = 52, ctermfg = 138 })
+  vim.api.nvim_set_hl(0, "DiffText", { bg = "#1c6a75", ctermbg = 30 })
 
-  vim.api.nvim_set_hl(0, 'MiniStatuslineModeDebug', { bg = '#FF2c2c', fg = "#1e1e1e", ctermbg = 30, bold = true })
+  vim.api.nvim_set_hl(0, "MiniStatuslineModeDebug", { bg = "#FF2c2c", fg = "#1e1e1e", ctermbg = 30, bold = true })
 
   -- Keywords em negrito (gui e cterm)
   for _, group in ipairs(keyword_groups) do
@@ -331,15 +334,17 @@ local function habamax_overrides()
   end
 end
 
-if vim.g.colors_name == 'habamax' then habamax_overrides() end
+if vim.g.colors_name == "habamax" then
+  habamax_overrides()
+end
 
-vim.api.nvim_create_autocmd('ColorScheme', {
-  pattern = 'habamax',
-  group = augroup 'habamax_overrides',
+vim.api.nvim_create_autocmd("ColorScheme", {
+  pattern = "habamax",
+  group = augroup("habamax_overrides"),
   callback = habamax_overrides,
 })
 
-local debug_mode = require("config.utils").debug_mode
+local debug_mode = U.debug_mode
 
 vim.api.nvim_create_autocmd("User", {
   pattern = "DebugModeChanged",
@@ -347,4 +352,26 @@ vim.api.nvim_create_autocmd("User", {
     debug_mode.set(args.data.enabled)
     vim.cmd("redrawstatus")
   end,
+})
+
+vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold" }, {
+  group = augroup("MarkSigns"),
+  callback = function(ev)
+    U.refresh_marks(ev.buf)
+  end,
+  desc = "Show marks in statuscolumn",
+})
+
+vim.api.nvim_create_autocmd("CmdlineLeave", {
+  group = group,
+  pattern = ":",
+  callback = function()
+    if vim.fn.getcmdline():match("^%s*delm") then
+      -- CmdlineLeave roda ANTES do comando executar, então adia o refresh
+      vim.schedule(function()
+        U.refresh_marks()
+      end)
+    end
+  end,
+  desc = "Update mark signs after :delmarks",
 })

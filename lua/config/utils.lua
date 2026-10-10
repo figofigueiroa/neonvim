@@ -257,4 +257,225 @@ function M.ensure_treesitter_cli(cb)
   end)
 end
 
+function M.ai_buffer(ai_type)
+  local start_line, end_line = 1, vim.fn.line("$")
+  if ai_type == "i" then
+    -- Skip first and last blank lines for `i` textobject
+    local first_nonblank, last_nonblank = vim.fn.nextnonblank(start_line), vim.fn.prevnonblank(end_line)
+    -- Do nothing for buffer with all blanks
+    if first_nonblank == 0 or last_nonblank == 0 then
+      return { from = { line = start_line, col = 1 } }
+    end
+    start_line, end_line = first_nonblank, last_nonblank
+  end
+
+  local to_col = math.max(vim.fn.getline(end_line):len(), 1)
+  return { from = { line = start_line, col = 1 }, to = { line = end_line, col = to_col } }
+end
+
+function M.is_loaded(name)
+  local Config = require("lazy.core.config")
+  return Config.plugins[name] and Config.plugins[name]._.loaded
+end
+
+---@param name string
+---@param fn fun(name:string)
+function M.on_load(name, fn)
+  if M.is_loaded(name) then
+    fn(name)
+  else
+    vim.api.nvim_create_autocmd("User", {
+      pattern = "LazyLoad",
+      callback = function(event)
+        if event.data == name then
+          fn(name)
+          return true
+        end
+      end,
+    })
+  end
+end
+
+M.mini = {}
+
+-- textobject "g": buffer inteiro ("ig" ignora linhas em branco nas pontas)
+function M.mini.ai_buffer(ai_type)
+  local start_line, end_line = 1, vim.fn.line("$")
+  if ai_type == "i" then
+    local first, last = vim.fn.nextnonblank(start_line), vim.fn.prevnonblank(end_line)
+    if first == 0 or last == 0 then -- buffer só com linhas vazias
+      return { from = { line = start_line, col = 1 } }
+    end
+    start_line, end_line = first, last
+  end
+  local to_col = math.max(vim.fn.getline(end_line):len(), 1)
+  return { from = { line = start_line, col = 1 }, to = { line = end_line, col = to_col } }
+end
+
+-- registra descrições dos textobjects no which-key
+function M.mini.ai_whichkey(opts)
+  local objects = {
+    { " ", desc = "whitespace" },
+    { '"', desc = '" string' },
+    { "'", desc = "' string" },
+    { "(", desc = "() block" },
+    { ")", desc = "() block with ws" },
+    { "<", desc = "<> block" },
+    { ">", desc = "<> block with ws" },
+    { "?", desc = "user prompt" },
+    { "U", desc = "use/call without dot" },
+    { "[", desc = "[] block" },
+    { "]", desc = "[] block with ws" },
+    { "_", desc = "underscore" },
+    { "`", desc = "` string" },
+    { "a", desc = "argument" },
+    { "b", desc = ")]} block" },
+    { "c", desc = "class" },
+    { "d", desc = "digit(s)" },
+    { "e", desc = "CamelCase / snake_case" },
+    { "f", desc = "function" },
+    { "g", desc = "entire file" },
+    { "i", desc = "indent" },
+    { "o", desc = "block, conditional, loop" },
+    { "q", desc = "quote `\"'" },
+    { "t", desc = "tag" },
+    { "u", desc = "use/call" },
+    { "{", desc = "{} block" },
+    { "}", desc = "{} with ws" },
+  }
+
+  local ret = { mode = { "o", "x" } }
+  local mappings = vim.tbl_extend("force", {
+    around = "a",
+    inside = "i",
+    around_next = "an",
+    inside_next = "in",
+    around_last = "al",
+    inside_last = "il",
+  }, opts.mappings or {})
+  mappings.goto_left, mappings.goto_right = nil, nil
+
+  for name, prefix in pairs(mappings) do
+    name = name:gsub("^around_", ""):gsub("^inside_", "")
+    ret[#ret + 1] = { prefix, group = name }
+    for _, obj in ipairs(objects) do
+      local desc = obj.desc
+      if prefix:sub(1, 1) == "i" then
+        desc = desc:gsub(" with ws", "")
+      end
+      ret[#ret + 1] = { prefix .. obj[1], desc = desc }
+    end
+  end
+  require("which-key").add(ret, { notify = false })
+end
+
+---@param what string|number|nil
+---@param query? string
+---@overload fun(buf?:number):boolean
+---@overload fun(ft:string):boolean
+---@return boolean
+function M.have(what, query)
+  what = what or vim.api.nvim_get_current_buf()
+  what = type(what) == "number" and vim.bo[what].filetype or what --[[@as string]]
+  local lang = vim.treesitter.language.get_lang(what)
+  if lang == nil or M.get_installed()[lang] == nil then
+    return false
+  end
+  if query and not M.have_query(lang, query) then
+    return false
+  end
+  return true
+end
+
+M.actions = {
+  -- Native Snippets
+  snippet_forward = function()
+    if vim.snippet.active({ direction = 1 }) then
+      vim.schedule(function()
+        vim.snippet.jump(1)
+      end)
+      return true
+    end
+  end,
+  snippet_stop = function()
+    if vim.snippet then
+      vim.snippet.stop()
+    end
+  end,
+}
+
+---@param actions string[]
+---@param fallback? string|fun()
+function M.map(actions, fallback)
+  return function()
+    for _, name in ipairs(actions) do
+      if M.actions[name] then
+        local ret = M.actions[name]()
+        if ret then
+          return true
+        end
+      end
+    end
+    return type(fallback) == "function" and fallback() or fallback
+  end
+end
+
+local mark_ns = vim.api.nvim_create_namespace("mark_signs")
+
+M.refresh_marks = function(buf)
+  buf = (buf == nil or buf == 0) and vim.api.nvim_get_current_buf() or buf
+  if not vim.api.nvim_buf_is_valid(buf) then
+    return
+  end
+  vim.api.nvim_buf_clear_namespace(buf, mark_ns, 0, -1)
+  local n_lines = vim.api.nvim_buf_line_count(buf)
+
+  local function place(name, lnum)
+    if lnum < 1 or lnum > n_lines then
+      return
+    end
+    vim.api.nvim_buf_set_extmark(buf, mark_ns, lnum - 1, 0, {
+      sign_text = name,
+      sign_hl_group = "DiagnosticHint",
+      priority = 5,
+    })
+  end
+
+  for _, m in ipairs(vim.fn.getmarklist(buf)) do
+    local name = m.mark:sub(2)
+    if name:match("^%l$") then
+      place(name, m.pos[2])
+    end
+  end
+
+  for _, m in ipairs(vim.fn.getmarklist()) do
+    local name = m.mark:sub(2)
+    if name:match("^%u$") and m.pos[1] == buf then
+      place(name, m.pos[2])
+    end
+  end
+end
+-- Retorna as letras das marks na linha atual (ex.: { 'a', 'C' })
+M.marks_on_line = function(buf, lnum)
+  buf = (buf == nil or buf == 0) and vim.api.nvim_get_current_buf() or buf
+  lnum = lnum or vim.api.nvim_win_get_cursor(0)[1]
+  local res = {}
+
+  for _, m in ipairs(vim.fn.getmarklist(buf)) do
+    local name = m.mark:sub(2)
+    if name:match("^%l$") and m.pos[2] == lnum then
+      table.insert(res, name)
+    end
+  end
+
+  for _, m in ipairs(vim.fn.getmarklist()) do
+    local name = m.mark:sub(2)
+    if name:match("^%u$") and m.pos[1] == buf and m.pos[2] == lnum then
+      table.insert(res, name)
+    end
+  end
+
+  return res
+end
+
 return M
