@@ -1,3 +1,8 @@
+if vim.g.neovide then
+  vim.g.neovide_has_mouse_grid_detection = true
+  vim.g.neovide_scale_factor = 0.8
+  vim.o.guifont = "IoskleyMonoTerm Nerd Font Mono:h12"
+end
 vim.cmd("colorscheme habamax")
 vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
@@ -101,5 +106,3 @@ require("vim._core.ui2").enable({
   },
 })
 vim.cmd("packadd nvim.difftool")
-
-vim.o.statusline = "%f %m %= %{v:lua.lsp_progress()} %l:%c"

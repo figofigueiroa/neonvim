@@ -375,3 +375,12 @@ vim.api.nvim_create_autocmd("CmdlineLeave", {
   end,
   desc = "Update mark signs after :delmarks",
 })
+
+-- vim.api.nvim_create_autocmd("BufReadPost", {
+--   callback = function(ev)
+--     local root = vim.fs.root(ev.buf, { ".git", "Makefile" })
+--     if root then
+--       vim.cmd.bcd(root)
+--     end
+--   end,
+-- })
