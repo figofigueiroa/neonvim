@@ -9,7 +9,7 @@ local debug_mode = U.debug_mode
 return {
   {
     "nvim-mini/mini.statusline",
-    event = "VeryLazy",
+    event = "LazyFile",
     config = function()
       local statusline = require("mini.statusline")
 
@@ -45,13 +45,13 @@ return {
             end
 
             return statusline.combine_groups({
-              { hl = mode_hl, strings = { mode } },
+              { hl = mode_hl,                 strings = { mode } },
               { hl = "MiniStatuslineDevinfo", strings = { git, diff, diagnostics, lsp } },
               "%<", -- truncate point
               { hl = "MiniStatuslineFilename", strings = { filename } },
               "%=", -- right align
               { hl = "MiniStatuslineFileinfo", strings = { rest, lsp_progress, fileinfo } },
-              { hl = mode_hl, strings = { search, location } },
+              { hl = mode_hl,                  strings = { search, location } },
             })
           end,
         },
