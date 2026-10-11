@@ -11,7 +11,19 @@ return {
       bigfile = { enabled = true },
       dashboard = { enabled = true },
       explorer = { enabled = true },
-      indent = { enabled = true },
+      indent = {
+        indent = {
+          enabled = false, -- enable indent guides
+        },
+        scope = {
+          enabled = true, -- enable highlighting the current scope
+          priority = 200,
+          char = "╎",
+          underline = false,
+          only_current = true,
+          hl = "SnacksIndentScope", ---@type string|string[] hl group for scopes
+        },
+      },
       input = { enabled = true },
       picker = {
         enabled = true,
