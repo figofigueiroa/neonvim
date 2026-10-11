@@ -182,10 +182,13 @@ local function habamax_overrides()
   -- Diffs mais legíveis que os do habamax (#274733/#373737/#2f1f1a); o neogit
   -- deriva os fundos dos diffs dele (line_green/line_red) do bg de
   -- DiffAdd/DiffDelete, e o codediff linka direto nesses grupos.
-  vim.api.nvim_set_hl(0, "DiffAdd", { bg = "#2e5c46", ctermbg = 22 })
+  vim.api.nvim_set_hl(0, "DiffAdd", { bg = "#2e5c46", fg = "#d1a3b9", ctermbg = 22 })
   vim.api.nvim_set_hl(0, "DiffChange", { bg = "#39434f", ctermbg = 238 })
-  vim.api.nvim_set_hl(0, "DiffDelete", { bg = "#462626", fg = "#d78787", ctermbg = 52, ctermfg = 138 })
+  vim.api.nvim_set_hl(0, "DiffDelete", { bg = "#462626", fg = "#B9D9D9", ctermbg = 52, ctermfg = 138 })
   vim.api.nvim_set_hl(0, "DiffText", { bg = "#1c6a75", ctermbg = 30 })
+
+  vim.api.nvim_set_hl(0, "String", { fg = "#9ed99c" })
+  vim.api.nvim_set_hl(0, "@string", { link = "String" }) -- Treesitter strings
 
   -- Keywords em negrito (gui e cterm)
   for _, group in ipairs(keyword_groups) do
@@ -308,25 +311,42 @@ local function extend_hl(name, attrs)
 end
 
 local function habamax_overrides()
+  local set = vim.api.nvim_set_hl
   -- Fundo transparente, preservando o fg do habamax
   extend_hl("Normal", { bg = "NONE", ctermbg = "NONE" })
-  vim.api.nvim_set_hl(0, "NormalFloat", { link = "Normal" })
-  vim.api.nvim_set_hl(0, "FloatBorder", { fg = "#767676", bg = "NONE" })
-  vim.api.nvim_set_hl(0, "VertSplit", { fg = "#767676", bg = "NONE" })
+  set(0, "NormalFloat", { link = "Normal" })
+  set(0, "FloatBorder", { fg = "#767676", bg = "NONE" })
+  set(0, "VertSplit", { fg = "#767676", bg = "NONE" })
 
-  vim.api.nvim_set_hl(0, "TabLineSel", { link = "PmenuSel" })
-  vim.api.nvim_set_hl(0, "TabLine", { link = "StatusLineNC" })
-  vim.api.nvim_set_hl(0, "TabLineFill", { link = "StatusLineNC" })
+  set(0, "TabLineSel", { link = "PmenuSel" })
+  set(0, "TabLine", { link = "StatusLineNC" })
+  set(0, "TabLineFill", { link = "StatusLineNC" })
 
   -- Diffs mais legíveis que os do habamax (#274733/#373737/#2f1f1a); o neogit
   -- deriva os fundos dos diffs dele (line_green/line_red) do bg de
   -- DiffAdd/DiffDelete, e o codediff linka direto nesses grupos.
-  vim.api.nvim_set_hl(0, "DiffAdd", { bg = "#2e5c46", ctermbg = 22 })
-  vim.api.nvim_set_hl(0, "DiffChange", { bg = "#39434f", ctermbg = 238 })
-  vim.api.nvim_set_hl(0, "DiffDelete", { bg = "#462626", fg = "#d78787", ctermbg = 52, ctermfg = 138 })
-  vim.api.nvim_set_hl(0, "DiffText", { bg = "#1c6a75", ctermbg = 30 })
+  set(0, "DiffAdd", { bg = "#2e5c46", ctermbg = 22 })
+  set(0, "DiffChange", { bg = "#39434f", ctermbg = 238 })
+  set(0, "DiffDelete", { bg = "#462626", fg = "#d78787", ctermbg = 52, ctermfg = 138 })
+  set(0, "DiffText", { bg = "#1c6a75", ctermbg = 30 })
 
-  vim.api.nvim_set_hl(0, "MiniStatuslineModeDebug", { bg = "#FF2c2c", fg = "#1e1e1e", ctermbg = 30, bold = true })
+  set(0, "MiniStatuslineModeDebug", { bg = "#FF2c2c", fg = "#1e1e1e", ctermbg = 30, bold = true })
+
+  -- Neogit: linhas adicionadas/removidas (hunks fora do cursor)
+  set(0, "NeogitDiffAdd", { fg = "#a6e3a1", bg = "#1f2e1f" })
+  set(0, "NeogitDiffDelete", { fg = "#f38ba8", bg = "#2e1f1f" })
+
+  -- Neogit: hunk onde o cursor está (um pouco mais forte)
+  set(0, "NeogitDiffAddHighlight", { fg = "#b8f0b0", bg = "#2a402a" })
+  set(0, "NeogitDiffDeleteHighlight", { fg = "#ffa0b8", bg = "#402a2a" })
+
+  -- Linhas de contexto (sem alteração)
+  set(0, "NeogitDiffContext", { bg = "#1c1c1c" })
+  set(0, "NeogitDiffContextHighlight", { bg = "#262626" })
+
+  -- Cabeçalho do hunk (@@ -1,4 +1,5 @@)
+  set(0, "NeogitHunkHeader", { fg = "#bcbcbc", bg = "#303030", bold = true })
+  set(0, "NeogitHunkHeaderHighlight", { fg = "#ffffff", bg = "#3a3a5a", bold = true })
 
   -- Keywords em negrito (gui e cterm)
   for _, group in ipairs(keyword_groups) do

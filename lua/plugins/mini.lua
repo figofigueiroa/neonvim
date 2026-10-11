@@ -9,7 +9,7 @@ local debug_mode = U.debug_mode
 return {
   {
     "nvim-mini/mini.statusline",
-    event = "VeryLazy",
+    event = "LazyFile",
     config = function()
       local statusline = require("mini.statusline")
 
