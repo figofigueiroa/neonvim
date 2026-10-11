@@ -47,25 +47,25 @@ return {
       },
     },
   },
-  -- {
-  --   "DrKJeff16/project.nvim",
-  --   cmd = { "Project" }, -- Lazy-load by commands
-  --   dependencies = { -- OPTIONAL. Choose any of the following
-  --     "folke/snacks.nvim",
-  --   },
-  --   opts = {
-  --     snacks = {
-  --       -- Will enable the `:Project snacks` command
-  --       enabled = true,
-  --       opts = {
-  --         sort = "newest",
-  --         hidden = false,
-  --         title = "Select Project",
-  --         layout = "select",
-  --         -- icon = {},
-  --         -- path_icons = {},
-  --       },
-  --     },
-  --   },
-  -- },
+  {
+    "figofigueiroa/rest.nvim",
+    ft = { "http" },
+    keys = {
+      { "<leader>R", "", desc = "+Rest" },
+      { "<leader>Re", "<cmd>Rest env select<cr>", desc = "Select environment", ft = "http" },
+      { "<leader>Ro", "<cmd>Rest open<cr>", desc = "Open result pane", ft = "http" },
+      { "<leader>Rr", "<cmd>Rest run<cr>", desc = "Send the request", ft = "http" },
+      { "<leader>RR", "<cmd>Rest last<cr>", desc = "Replay the last request", ft = "http" },
+      { "<leader>Rv", "<cmd>Rest vars select<cr>", desc = "Select vars for http session", ft = "http" },
+      { "<leader>Rl", "<cmd>Rest vars list<cr>", desc = "List vars for http session", ft = "http" },
+    },
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter",
+      opts = function(_, opts)
+        opts.ensure_installed = opts.ensure_installed or {}
+        table.insert(opts.ensure_installed, "http")
+        table.insert(opts.ensure_installed, "graphql")
+      end,
+    },
+  },
 }

@@ -29,6 +29,9 @@ return {
           local diff = statusline.section_diff({ trunc_width = 75 })
           local diagnostics = statusline.section_diagnostics({ trunc_width = 75 })
           local lsp = statusline.section_lsp({ trunc_width = 75 })
+          -- rest.nvim: variáveis selecionadas (:Rest vars select); o guard de
+          -- filetype evita carregar o plugin (lazy ft=http) fora de buffers http
+          local rest = vim.bo.filetype == "http" and require("rest-nvim.variaveis").statusline() or ""
           local filename = statusline.section_filename({ trunc_width = 140 })
           local fileinfo = statusline.section_fileinfo({ trunc_width = 120 })
           local location = statusline.section_location({ trunc_width = 75 })
@@ -41,13 +44,13 @@ return {
           end
 
           return statusline.combine_groups({
-            { hl = mode_hl, strings = { mode } },
-            { hl = "MiniStatuslineDevinfo", strings = { git, diff, diagnostics, lsp, spinner } },
+            { hl = mode_hl,                 strings = { mode } },
+            { hl = "MiniStatuslineDevinfo", strings = { git, diff, diagnostics, lsp } },
             "%<", -- truncate point
             { hl = "MiniStatuslineFilename", strings = { filename } },
             "%=", -- right align
-            { hl = "MiniStatuslineFileinfo", strings = { lsp_progress, fileinfo } },
-            { hl = mode_hl, strings = { search, location } },
+            { hl = "MiniStatuslineFileinfo", strings = { rest, lsp_progress, fileinfo } },
+            { hl = mode_hl,                  strings = { search, location } },
           })
         end,
       },

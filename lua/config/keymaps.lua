@@ -251,3 +251,5 @@ vim.keymap.set("n", "<leader>m", function()
 
   U.refresh_marks(buf)
 end, { desc = "Delete mark(s)" })
+
+vim.keymap.set("t", "<Esc><Esc>", [[<C-\><C-n>]], { desc = "Exit terminal mode" })
