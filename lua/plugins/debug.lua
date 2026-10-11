@@ -3,8 +3,7 @@ local U = require("config.utils")
 return {
   {
     "mfussenegger/nvim-dap",
-    dependencies = {
-    },
+    dependencies = {},
 
     -- stylua: ignore
     keys = {
@@ -79,7 +78,7 @@ return {
     -- osv is needed if you want to debug neovim lua code. Also can be used
     -- as a way to quickly test-drive the plugin without configuring debug adapters
     event = "LazyFile",
-    dependencies = { "mfussenegger/nvim-dap", "jbyuki/one-small-step-for-vimkind", },
+    dependencies = { "mfussenegger/nvim-dap", "jbyuki/one-small-step-for-vimkind" },
     config = function()
       local dm = require("debugmaster")
       -- make sure you don't have any other keymaps that starts with "<leader>d" to avoid delay
@@ -90,10 +89,14 @@ return {
       -- This might be unwanted if you already use Esc for ":noh"
       vim.keymap.set("t", "<C-\\>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
 
+      dm.keys.get("t").key = "b" -- remap x key in debug mode to y
+      dm.keys.get("m").key = "i" -- remap x key in debug mode to y
+      dm.keys.get("q").key = "O" -- remap x key in debug mode to y
+
       dm.plugins.osv_integration.enabled = true -- needed if you want to debug neovim lua code
       local dap = require("dap")
       -- Configure your debug adapters here
       -- https://github.com/mfussenegger/nvim-dap/wiki/Debug-Adapter-installation
-    end
-  }
+    end,
+  },
 }
