@@ -423,8 +423,6 @@ return {
       })
     end,
   },
-  { "mason-org/mason-lspconfig.nvim", config = function() end },
-  -- lazy.nvim
   {
     "GustavEikaas/easy-dotnet.nvim",
     ft = "cs",

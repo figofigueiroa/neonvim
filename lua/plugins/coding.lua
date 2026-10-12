@@ -41,6 +41,7 @@ return {
     "saghen/blink.cmp",
     version = "1.*",
     event = { "InsertEnter", "CmdlineEnter" },
+    -- build = "cargo +nightly build --release",
     dependencies = {
       "L3MON4D3/LuaSnip",
       "rafamadriz/friendly-snippets",
@@ -92,7 +93,7 @@ return {
       -- the rust implementation via `'prefer_rust_with_warning'`
       --
       -- See `:help blink-cmp-config-fuzzy` for more information
-      fuzzy = { implementation = "lua" },
+      -- fuzzy = { implementation = "lua" },
 
       -- Shows a signature help window while you type arguments for a function
       signature = { enabled = true },
@@ -100,7 +101,6 @@ return {
   },
   {
     "ThePrimeagen/refactoring.nvim",
-    event = { "BufReadPre", "BufNewFile" },
     dependencies = { "lewis6991/async.nvim", lazy = true },
     keys = {
       { "<leader>r", "", desc = "+refactor", mode = { "n", "x" } },

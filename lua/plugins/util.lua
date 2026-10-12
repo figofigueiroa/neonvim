@@ -1,14 +1,15 @@
 return {
 
-  {
-    "willothy/flatten.nvim",
-    config = true,
-    -- or pass configuration with
-    -- opts = {  }
-    -- Ensure that it runs first to minimize delay when opening file from terminal
-    lazy = false,
-    priority = 1001,
-  },
+  -- {
+  --   "willothy/flatten.nvim",
+  --   -- event = "TermOpen",
+  --   config = true,
+  --   -- or pass configuration with
+  --   -- opts = {  }
+  --   -- Ensure that it runs first to minimize delay when opening file from terminal
+  --   lazy = false,
+  --   priority = 1001,
+  -- },
   {
     "folke/persistence.nvim",
     event = "BufReadPre", -- só começa a rastrear quando você abre um arquivo

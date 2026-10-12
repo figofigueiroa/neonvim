@@ -168,6 +168,19 @@ local function extend_hl(name, attrs)
   vim.api.nvim_set_hl(0, name, hl)
 end
 
+-- Keywords de linguagens em negrito, preservando o fg (gui e cterm)
+local function bold_keywords()
+  for _, group in ipairs(keyword_groups) do
+    extend_hl(group, { bold = true, cterm = { bold = true } })
+  end
+end
+
+-- Modo debug (debugmaster): badge vermelho "DEBUG" na statusline;
+-- cores fixas, vale para qualquer tema
+local function debug_mode_hl()
+  vim.api.nvim_set_hl(0, "MiniStatuslineModeDebug", { bg = "#FF2c2c", fg = "#1e1e1e", ctermbg = 30, bold = true })
+end
+
 local function habamax_overrides()
   local set = vim.api.nvim_set_hl
   -- Fundo transparente, preservando o fg do habamax
@@ -183,11 +196,6 @@ local function habamax_overrides()
   -- Diffs mais legíveis que os do habamax (#274733/#373737/#2f1f1a); o neogit
   -- deriva os fundos dos diffs dele (line_green/line_red) do bg de
   -- DiffAdd/DiffDelete, e o codediff linka direto nesses grupos.
-  set(0, "DiffAdd", { bg = "#2e5c46", fg = "#d1a3b9", ctermbg = 22 })
-  set(0, "DiffChange", { bg = "#39434f", ctermbg = 238 })
-  set(0, "DiffDelete", { bg = "#462626", fg = "#B9D9D9", ctermbg = 52, ctermfg = 138 })
-  set(0, "DiffText", { bg = "#1c6a75", ctermbg = 30 })
-
   set(0, "String", { fg = "#9ed99c" })
   set(0, "@string", { link = "String" }) -- Treesitter strings
 
@@ -196,7 +204,7 @@ local function habamax_overrides()
   set(0, "DiffDelete", { bg = "#462626", fg = "#d78787", ctermbg = 52, ctermfg = 138 })
   set(0, "DiffText", { bg = "#1c6a75", ctermbg = 30 })
 
-  set(0, "MiniStatuslineModeDebug", { bg = "#FF2c2c", fg = "#1e1e1e", ctermbg = 30, bold = true })
+  debug_mode_hl()
 
   -- Neogit: linhas adicionadas/removidas (hunks fora do cursor)
   set(0, "NeogitDiffAdd", { fg = "#a6e3a1", bg = "#1f2e1f" })
@@ -213,13 +221,21 @@ local function habamax_overrides()
   set(0, "NeogitHunkHeader", { fg = "#bcbcbc", bg = "#303030", bold = true })
   set(0, "NeogitHunkHeaderHighlight", { fg = "#ffffff", bg = "#3a3a5a", bold = true })
   -- Keywords em negrito (gui e cterm)
-  for _, group in ipairs(keyword_groups) do
-    extend_hl(group, { bold = true, cterm = { bold = true } })
-  end
+  bold_keywords()
+end
+
+-- Alabaster: keywords em negrito + badge de modo debug na statusline
+local function alabaster_overrides()
+  bold_keywords()
+  debug_mode_hl()
 end
 
 if vim.g.colors_name == "habamax" then
   habamax_overrides()
+end
+
+if vim.g.colors_name == "alabaster" then
+  alabaster_overrides()
 end
 
 vim.api.nvim_create_autocmd("ColorScheme", {
@@ -228,39 +244,11 @@ vim.api.nvim_create_autocmd("ColorScheme", {
   callback = habamax_overrides,
 })
 
-local lsp_progress = ""
-
-vim.api.nvim_create_autocmd("LspProgress", {
-  callback = function(ev)
-    local value = ev.data.params.value
-
-    if value.kind == "end" then
-      lsp_progress = ""
-    else
-      local parts = {}
-
-      if value.title then
-        table.insert(parts, value.title)
-      end
-
-      if value.message then
-        table.insert(parts, value.message)
-      end
-
-      if value.percentage then
-        table.insert(parts, value.percentage .. "%%")
-      end
-
-      lsp_progress = table.concat(parts, " ")
-    end
-
-    vim.cmd.redrawstatus()
-  end,
+vim.api.nvim_create_autocmd("ColorScheme", {
+  pattern = "alabaster",
+  group = augroup("alabaster_overrides"),
+  callback = alabaster_overrides,
 })
-
-_G.lsp_progress = function()
-  return lsp_progress
-end
 
 local Event = require("lazy.core.handler.event")
 
@@ -285,88 +273,6 @@ vim.api.nvim_create_autocmd(events, {
       vim.api.nvim_exec_autocmds(ev.event, { buffer = ev.buf, modeline = false })
     end)
   end,
-})
-
--- Grupos de keyword do treesitter + grupos legados (syntax regex)
-local keyword_groups = {
-  "@keyword",
-  "@keyword.coroutine",
-  "@keyword.function",
-  "@keyword.operator",
-  "@keyword.import",
-  "@keyword.type",
-  "@keyword.modifier",
-  "@keyword.repeat",
-  "@keyword.return",
-  "@keyword.debug",
-  "@keyword.exception",
-  "@keyword.conditional",
-  "@keyword.conditional.ternary",
-  "@keyword.directive",
-  "@keyword.directive.define",
-  "Keyword",
-  "Statement",
-  "Conditional",
-  "Repeat",
-  "Exception",
-  "Include",
-}
-
--- Definição efetiva do grupo, subindo na hierarquia se não existir
--- (@keyword.return -> @keyword), como o fallback do treesitter faz
-local function resolve_hl(name)
-  while name do
-    local hl = vim.api.nvim_get_hl(0, { name = name, link = false, create = false })
-    if next(hl) then
-      return hl
-    end
-    name = name:match("^(.*)%.[^.]+$")
-  end
-  return {}
-end
-
--- nvim_set_hl SUBSTITUI o grupo inteiro; isto mescla só o que você passar
-local function extend_hl(name, attrs)
-  local hl = vim.tbl_deep_extend("force", resolve_hl(name), attrs)
-  ---@cast hl vim.api.keyset.highlight
-  vim.api.nvim_set_hl(0, name, hl)
-end
-
-local function habamax_overrides()
-  -- Fundo transparente, preservando o fg do habamax
-  extend_hl("Normal", { bg = "NONE", ctermbg = "NONE" })
-  vim.api.nvim_set_hl(0, "NormalFloat", { link = "Normal" })
-  vim.api.nvim_set_hl(0, "FloatBorder", { fg = "#767676", bg = "NONE" })
-  vim.api.nvim_set_hl(0, "VertSplit", { fg = "#767676", bg = "NONE" })
-
-  vim.api.nvim_set_hl(0, "TabLineSel", { link = "PmenuSel" })
-  vim.api.nvim_set_hl(0, "TabLine", { link = "StatusLineNC" })
-  vim.api.nvim_set_hl(0, "TabLineFill", { link = "StatusLineNC" })
-
-  -- Diffs mais legíveis que os do habamax (#274733/#373737/#2f1f1a); o neogit
-  -- deriva os fundos dos diffs dele (line_green/line_red) do bg de
-  -- DiffAdd/DiffDelete, e o codediff linka direto nesses grupos.
-  vim.api.nvim_set_hl(0, "DiffAdd", { bg = "#2e5c46", ctermbg = 22 })
-  vim.api.nvim_set_hl(0, "DiffChange", { bg = "#39434f", ctermbg = 238 })
-  vim.api.nvim_set_hl(0, "DiffDelete", { bg = "#462626", fg = "#d78787", ctermbg = 52, ctermfg = 138 })
-  vim.api.nvim_set_hl(0, "DiffText", { bg = "#1c6a75", ctermbg = 30 })
-
-  vim.api.nvim_set_hl(0, "MiniStatuslineModeDebug", { bg = "#FF2c2c", fg = "#1e1e1e", ctermbg = 30, bold = true })
-
-  -- Keywords em negrito (gui e cterm)
-  for _, group in ipairs(keyword_groups) do
-    extend_hl(group, { bold = true, cterm = { bold = true } })
-  end
-end
-
-if vim.g.colors_name == "habamax" then
-  habamax_overrides()
-end
-
-vim.api.nvim_create_autocmd("ColorScheme", {
-  pattern = "habamax",
-  group = augroup("habamax_overrides"),
-  callback = habamax_overrides,
 })
 
 local debug_mode = U.debug_mode

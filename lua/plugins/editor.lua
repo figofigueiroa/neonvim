@@ -10,7 +10,7 @@ return {
       -- refer to the configuration section below
       bigfile = { enabled = true },
       dashboard = { enabled = true },
-      explorer = { enabled = true },
+      explorer = { enabled = false },
       indent = {
         indent = {
           enabled = false, -- enable indent guides
@@ -79,20 +79,6 @@ return {
           Snacks.picker.command_history()
         end,
         desc = "Command History",
-      },
-      {
-        "<leader>n",
-        function()
-          Snacks.picker.notifications()
-        end,
-        desc = "Notification History",
-      },
-      {
-        "<leader>e",
-        function()
-          Snacks.explorer()
-        end,
-        desc = "File Explorer",
       },
       -- find
       {
@@ -274,13 +260,6 @@ return {
           Snacks.picker.autocmds()
         end,
         desc = "Autocmds",
-      },
-      {
-        "<leader>sb",
-        function()
-          Snacks.picker.lines()
-        end,
-        desc = "Buffer Lines",
       },
       {
         "<leader>sc",
@@ -509,13 +488,13 @@ return {
         end,
         desc = "Delete Buffer",
       },
-      {
-        "<leader>cR",
-        function()
-          Snacks.rename.rename_file()
-        end,
-        desc = "Rename File",
-      },
+      -- {
+      --   "<leader>cR",
+      --   function()
+      --     Snacks.rename.rename_file()
+      --   end,
+      --   desc = "Rename File",
+      -- },
       {
         "<leader>gB",
         function()
@@ -580,34 +559,6 @@ return {
           })
         end,
       },
-      {
-        "<leader>gi",
-        function()
-          Snacks.picker.gh_issue()
-        end,
-        desc = "GitHub Issues (open)",
-      },
-      {
-        "<leader>gI",
-        function()
-          Snacks.picker.gh_issue({ state = "all" })
-        end,
-        desc = "GitHub Issues (all)",
-      },
-      {
-        "<leader>gp",
-        function()
-          Snacks.picker.gh_pr()
-        end,
-        desc = "GitHub Pull Requests (open)",
-      },
-      {
-        "<leader>gP",
-        function()
-          Snacks.picker.gh_pr({ state = "all" })
-        end,
-        desc = "GitHub Pull Requests (all)",
-      },
     },
     init = function()
       vim.api.nvim_create_autocmd("User", {
@@ -637,8 +588,8 @@ return {
           Snacks.toggle.diagnostics():map("<leader>ud")
           Snacks.toggle.line_number():map("<leader>ul")
           Snacks.toggle
-              .option("conceallevel", { off = 0, on = vim.o.conceallevel > 0 and vim.o.conceallevel or 2 })
-              :map("<leader>uc")
+            .option("conceallevel", { off = 0, on = vim.o.conceallevel > 0 and vim.o.conceallevel or 2 })
+            :map("<leader>uc")
           Snacks.toggle.treesitter():map("<leader>uT")
           Snacks.toggle.option("background", { off = "light", on = "dark", name = "Dark Background" }):map("<leader>ub")
           Snacks.toggle.inlay_hints():map("<leader>uh")
@@ -664,21 +615,21 @@ return {
               return require("which-key.extras").expand.buf()
             end,
           },
-          { "<leader>c",     group = "[C]ode" },
-          { "<leader>d",     group = "[D]ebug" },
-          { "<leader>dp",    group = "[P]rofiler" },
-          { "<leader>f",     group = "[F]ile/find" },
-          { "<leader>g",     group = "[G]it" },
-          { "<leader>gh",    group = "[H]unks" },
-          { "<leader>q",     group = "[Q]uit/session" },
-          { "<leader>s",     group = "[S]earch" },
-          { "<leader>u",     group = "[U]I" },
-          { "<leader>x",     group = "diagnostics/quickfix" },
-          { "[",             group = "prev" },
-          { "]",             group = "next" },
-          { "g",             group = "goto" },
-          { "gs",            group = "surround" },
-          { "z",             group = "fold" },
+          { "<leader>c", group = "[C]ode" },
+          { "<leader>d", group = "[D]ebug" },
+          { "<leader>dp", group = "[P]rofiler" },
+          { "<leader>f", group = "[F]ile/find" },
+          { "<leader>g", group = "[G]it" },
+          { "<leader>gh", group = "[H]unks" },
+          { "<leader>q", group = "[Q]uit/session" },
+          { "<leader>s", group = "[S]earch" },
+          { "<leader>u", group = "[U]I" },
+          { "<leader>x", group = "diagnostics/quickfix" },
+          { "[", group = "prev" },
+          { "]", group = "next" },
+          { "g", group = "goto" },
+          { "gs", group = "surround" },
+          { "z", group = "fold" },
           {
             "<leader>w",
             group = "[W]indows",

@@ -105,8 +105,6 @@ return {
       { "<leader>bj", "<cmd>BufferLinePick<cr>", desc = "Pick Buffer" },
     },
     opts = {
-
-      highlights = bufferline_highlights(),
       options = {
         -- stylua: ignore
         close_command = function(n) Snacks.bufdelete(n) end,
@@ -120,12 +118,6 @@ return {
           return vim.trim(ret)
         end,
         offsets = {
-          {
-            filetype = "neo-tree",
-            text = "Neo-tree",
-            highlight = "Directory",
-            text_align = "left",
-          },
           {
             filetype = "snacks_layout_box",
           },
@@ -141,6 +133,9 @@ return {
       },
     },
     config = function(_, opts)
+      -- aqui, não em opts: bufferline_highlights() precisa ler as cores
+      -- DEPOIS do colorscheme carregar (opts é avaliado no import dos specs)
+      opts.highlights = bufferline_highlights()
       require("bufferline").setup(opts)
       -- Fix bufferline when restoring a session
       vim.api.nvim_create_autocmd({ "BufAdd", "BufDelete" }, {
@@ -150,6 +145,15 @@ return {
           end)
         end,
       })
+    end,
+  },
+  {
+    "dchinmay2/alabaster.nvim",
+    lazy = false,
+    priority = 1000,
+    config = function()
+      vim.g.alabaster_floatborder = true
+      vim.cmd.colorscheme("alabaster")
     end,
   },
 }
