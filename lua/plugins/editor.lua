@@ -713,6 +713,17 @@ return {
   {
     "NeogitOrg/neogit",
     -- lazy = true,
+    -- Sem opts o setup() nunca roda (hl.setup só é chamado de neogit.setup):
+    -- os grupos NeogitDiff* nem existiam, deletadas ficavam sem highlight.
+    -- O neogit deriva o fundo das linhas do bg de DiffAdd/DiffDelete
+    -- (colors/habamax-diff.lua), mas o fg das deletadas vem do ErrorMsg
+    -- escurecido (#8f4d4d) — fixo aqui em vez de mudar o ErrorMsg do tema.
+    opts = {
+      highlight = {
+        red = "#d96a6a", -- fg do hunk deletado sob o cursor
+        bg_red = "#c98181", -- fg das linhas deletadas (fora do cursor)
+      },
+    },
     dependencies = {
       -- Only one of these is needed.
       "esmuellert/codediff.nvim", -- optional

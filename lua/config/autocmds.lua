@@ -193,33 +193,13 @@ local function habamax_overrides()
   set(0, "TabLine", { link = "StatusLineNC" })
   set(0, "TabLineFill", { link = "StatusLineNC" })
 
-  -- Diffs mais legíveis que os do habamax (#274733/#373737/#2f1f1a); o neogit
-  -- deriva os fundos dos diffs dele (line_green/line_red) do bg de
-  -- DiffAdd/DiffDelete, e o codediff linka direto nesses grupos.
-  set(0, "String", { fg = "#9ed99c" })
+  -- Diffs (vimdiff nativo, codediff, neogit) ficam em colors/habamax-diff.lua,
+  -- camada aplicada depois destes overrides
+  set(0, "String", { fg = "#9ed99c" }) -- também alimenta o verde do neogit
   set(0, "@string", { link = "String" }) -- Treesitter strings
-
-  set(0, "DiffAdd", { bg = "#2e5c46", ctermbg = 22 })
-  set(0, "DiffChange", { bg = "#39434f", ctermbg = 238 })
-  set(0, "DiffDelete", { bg = "#462626", fg = "#d78787", ctermbg = 52, ctermfg = 138 })
-  set(0, "DiffText", { bg = "#1c6a75", ctermbg = 30 })
 
   debug_mode_hl()
 
-  -- Neogit: linhas adicionadas/removidas (hunks fora do cursor)
-  set(0, "NeogitDiffAdd", { fg = "#a6e3a1", bg = "#1f2e1f" })
-  set(0, "NeogitDiffDelete", { fg = "#f38ba8", bg = "#2e1f1f" })
-
-  -- Neogit: hunk onde o cursor está (um pouco mais forte)
-  set(0, "NeogitDiffAddHighlight", { fg = "#b8f0b0", bg = "#2a402a" })
-  set(0, "NeogitDiffDeleteHighlight", { fg = "#ffa0b8", bg = "#402a2a" })
-
-  -- Linhas de contexto (sem alteração)
-  set(0, "NeogitDiffContext", { bg = "#1c1c1c" })
-  set(0, "NeogitDiffContextHighlight", { bg = "#262626" })
-
-  set(0, "NeogitHunkHeader", { fg = "#bcbcbc", bg = "#303030", bold = true })
-  set(0, "NeogitHunkHeaderHighlight", { fg = "#ffffff", bg = "#3a3a5a", bold = true })
   -- Keywords em negrito (gui e cterm)
   bold_keywords()
 end
@@ -239,7 +219,8 @@ if vim.g.colors_name == "alabaster" then
 end
 
 vim.api.nvim_create_autocmd("ColorScheme", {
-  pattern = "habamax",
+  -- "habamax-diff" (colors/habamax-diff.lua) carrega este tema como base
+  pattern = { "habamax", "habamax-diff" },
   group = augroup("habamax_overrides"),
   callback = habamax_overrides,
 })

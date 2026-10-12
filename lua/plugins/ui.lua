@@ -153,7 +153,7 @@ return {
     priority = 1000,
     config = function()
       vim.g.alabaster_floatborder = true
-      vim.cmd.colorscheme("alabaster")
+      vim.cmd.colorscheme("habamax-diff") -- habamax + diffs legíveis (colors/habamax-diff.lua)
     end,
   },
 }
