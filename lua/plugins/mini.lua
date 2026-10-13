@@ -22,6 +22,29 @@ return {
         return statusline.section_mode({ trunc_width = trunc_width })
       end
 
+      -- marcadores de raiz vindos de vim.g.root_spec (options.lua);
+      -- "lsp"/"cwd" são detectors, não padrões de arquivo/diretório
+      local root_markers = {}
+      for _, spec in ipairs(vim.g.root_spec or {}) do
+        if type(spec) == "table" then
+          vim.list_extend(root_markers, spec)
+        end
+      end
+
+      -- nome da raiz do projeto + caminho relativo a ela; sem marcador acima → absoluto
+      local function filename_section(args)
+        if vim.bo.buftype == "terminal" then
+          return "%t"
+        elseif statusline.is_truncated(args.trunc_width) then
+          return "%f%m%r"
+        end
+        local path = vim.api.nvim_buf_get_name(0)
+        local root = path ~= "" and vim.fs.root(path, root_markers)
+        local rel = root and vim.fs.relpath(root, path)
+        local file = (rel and (vim.fs.basename(root) .. "/" .. rel) or path):gsub("%%", "%%%%")
+        return file ~= "" and file .. "%m%r" or "%F%m%r"
+      end
+
       statusline.setup({
         content = {
           active = function()
@@ -33,25 +56,27 @@ return {
             -- rest.nvim: variáveis selecionadas (:Rest vars select); o guard de
             -- filetype evita carregar o plugin (lazy ft=http) fora de buffers http
             local rest = vim.bo.filetype == "http" and require("rest-nvim.variaveis").statusline() or ""
-            local filename = statusline.section_filename({ trunc_width = 140 })
+            local filename = filename_section({ trunc_width = 140 })
             local fileinfo = statusline.section_fileinfo({ trunc_width = 120 })
             local location = statusline.section_location({ trunc_width = 75 })
             local search = statusline.section_searchcount({ trunc_width = 75 })
 
             -- LSP progress nativo (Neovim 0.10+)
+            -- ponytail: spinner anima só quando a statusline redesenha (atividade);
+            -- sem timer dedicado — adicionar se quiser animação parado
             local lsp_progress = vim.lsp.status()
             if lsp_progress ~= "" then
-              lsp_progress = " " .. lsp_progress
+              lsp_progress = " " .. Snacks.util.spinner() .. " " .. lsp_progress
             end
 
             return statusline.combine_groups({
-              { hl = mode_hl,                 strings = { mode } },
+              { hl = mode_hl, strings = { mode } },
               { hl = "MiniStatuslineDevinfo", strings = { git, diff, diagnostics, lsp } },
               "%<", -- truncate point
               { hl = "MiniStatuslineFilename", strings = { filename } },
               "%=", -- right align
               { hl = "MiniStatuslineFileinfo", strings = { rest, lsp_progress, fileinfo } },
-              { hl = mode_hl,                  strings = { search, location } },
+              { hl = mode_hl, strings = { search, location } },
             })
           end,
         },

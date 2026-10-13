@@ -517,6 +517,7 @@ return {
           Snacks.terminal()
         end,
         desc = "Toggle Terminal",
+        mode = { "n", "t" },
       },
       {
         "<c-_>",
@@ -588,8 +589,8 @@ return {
           Snacks.toggle.diagnostics():map("<leader>ud")
           Snacks.toggle.line_number():map("<leader>ul")
           Snacks.toggle
-            .option("conceallevel", { off = 0, on = vim.o.conceallevel > 0 and vim.o.conceallevel or 2 })
-            :map("<leader>uc")
+              .option("conceallevel", { off = 0, on = vim.o.conceallevel > 0 and vim.o.conceallevel or 2 })
+              :map("<leader>uc")
           Snacks.toggle.treesitter():map("<leader>uT")
           Snacks.toggle.option("background", { off = "light", on = "dark", name = "Dark Background" }):map("<leader>ub")
           Snacks.toggle.inlay_hints():map("<leader>uh")
@@ -615,21 +616,21 @@ return {
               return require("which-key.extras").expand.buf()
             end,
           },
-          { "<leader>c", group = "[C]ode" },
-          { "<leader>d", group = "[D]ebug" },
-          { "<leader>dp", group = "[P]rofiler" },
-          { "<leader>f", group = "[F]ile/find" },
-          { "<leader>g", group = "[G]it" },
-          { "<leader>gh", group = "[H]unks" },
-          { "<leader>q", group = "[Q]uit/session" },
-          { "<leader>s", group = "[S]earch" },
-          { "<leader>u", group = "[U]I" },
-          { "<leader>x", group = "diagnostics/quickfix" },
-          { "[", group = "prev" },
-          { "]", group = "next" },
-          { "g", group = "goto" },
-          { "gs", group = "surround" },
-          { "z", group = "fold" },
+          { "<leader>c",     group = "[C]ode" },
+          { "<leader>d",     group = "[D]ebug" },
+          { "<leader>dp",    group = "[P]rofiler" },
+          { "<leader>f",     group = "[F]ile/find" },
+          { "<leader>g",     group = "[G]it" },
+          { "<leader>gh",    group = "[H]unks" },
+          { "<leader>q",     group = "[Q]uit/session" },
+          { "<leader>s",     group = "[S]earch" },
+          { "<leader>u",     group = "[U]I" },
+          { "<leader>x",     group = "diagnostics/quickfix" },
+          { "[",             group = "prev" },
+          { "]",             group = "next" },
+          { "g",             group = "goto" },
+          { "gs",            group = "surround" },
+          { "z",             group = "fold" },
           {
             "<leader>w",
             group = "[W]indows",
@@ -720,7 +721,7 @@ return {
     -- escurecido (#8f4d4d) — fixo aqui em vez de mudar o ErrorMsg do tema.
     opts = {
       highlight = {
-        red = "#d96a6a", -- fg do hunk deletado sob o cursor
+        red = "#d96a6a",    -- fg do hunk deletado sob o cursor
         bg_red = "#c98181", -- fg das linhas deletadas (fora do cursor)
       },
     },

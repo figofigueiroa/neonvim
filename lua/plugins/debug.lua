@@ -94,7 +94,7 @@ return {
       dm.keys.get("q").key = "O" -- remap x key in debug mode to y
 
       dm.plugins.osv_integration.enabled = true -- needed if you want to debug neovim lua code
-      local dap = require("dap")
+      -- local dap = require("dap")
       -- Configure your debug adapters here
       -- https://github.com/mfussenegger/nvim-dap/wiki/Debug-Adapter-installation
     end,

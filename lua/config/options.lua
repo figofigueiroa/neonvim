@@ -8,7 +8,7 @@ end
 vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
 
--- root dir detection (consumido por config/root.lua)
+-- root dir detection (padrões consumidos pelo statusline em plugins/mini.lua)
 -- Each entry can be:
 -- * the name of a detector function like `lsp` or `cwd`
 -- * a pattern or array of patterns like `.git` or `lua`.
