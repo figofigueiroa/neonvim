@@ -1,15 +1,5 @@
--- ponytail: /tmp exports are never deleted; OS cleans /tmp, add cleanup if disk pressure matters
-local function export_tree(ref, dir)
-  local tar = dir .. ".tar"
-  vim.fn.system({ "git", "archive", "--format=tar", "--output=" .. tar, ref })
-  if vim.v.shell_error ~= 0 then
-    return false
-  end
-  vim.fn.system({ "tar", "-xf", tar, "-C", dir })
-  return vim.v.shell_error == 0
-end
-
 local function diff_branch()
+  local cwd = vim.fn.getcwd()
   local current = vim.trim(vim.fn.system("git branch --show-current"))
   local branches = vim.fn.systemlist({
     "git",
@@ -28,14 +18,7 @@ local function diff_branch()
     if not branch then
       return
     end
-    local left, right = vim.fn.tempname(), vim.fn.tempname()
-    vim.fn.mkdir(left, "p")
-    vim.fn.mkdir(right, "p")
-    if not export_tree("HEAD", left) or not export_tree(branch, right) then
-      return vim.notify(("Failed to export %s"):format(branch), vim.log.levels.ERROR)
-    end
-    vim.cmd("packadd nvim.difftool") -- lazy's rtp reset drops the pack from package.path
-    require("difftool").open(left, right)
+    vim.api.nvim_cmd({ cmd = "CodeDiff", args = { "--repo", cwd, "HEAD", branch } }, {})
   end)
 end
 
@@ -111,9 +94,9 @@ return {
     },
   },
   {
-    "lewis6991/gitsigns.nvim",
+    "esmuellert/codediff.nvim",
     keys = {
-      { "<leader>gD", diff_branch, desc = "Diff Branch (DiffTool)" },
+      { "<leader>gD", diff_branch, desc = "Diff Branch (CodeDiff)" },
     },
   },
 }

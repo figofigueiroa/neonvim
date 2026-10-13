@@ -24,9 +24,9 @@ local function bufferline_highlights()
   local normal_bg = hl_color("Normal", "bg", "#1c1c1c")
 
   local c = {
-    fill = blend("#000000", normal_bg, 0.35), -- faixa atrás das abas (mais escura)
+    fill = blend("#000000", normal_bg, 0.35),     -- faixa atrás das abas (mais escura)
     inactive = blend("#000000", normal_bg, 0.15), -- abas não focadas
-    selected = normal_bg, -- aba ativa tem o mesmo fundo da janela
+    selected = normal_bg,                         -- aba ativa tem o mesmo fundo da janela
     fg = hl_color("Normal", "fg", "#bcbcbc"),
     dim = hl_color("Comment", "fg", "#767676"),
     accent = hl_color("Function", "fg", "#87afd7"),
@@ -74,14 +74,14 @@ local function bufferline_highlights()
   family("pick", c.error, c.error, { italic = true })
 
   for _, d in ipairs({
-    { "error", c.error },
+    { "error",   c.error },
     { "warning", c.warn },
-    { "info", c.info },
-    { "hint", c.hint },
+    { "info",    c.info },
+    { "hint",    c.hint },
   }) do
     local name, color = d[1], d[2]
     family(name, blend(color, c.inactive, 0.6), color) -- nome do arquivo
-    family(name .. "_diagnostic", color, color) -- ícone + contador
+    family(name .. "_diagnostic", color, color)        -- ícone + contador
   end
 
   return hl
@@ -92,17 +92,17 @@ return {
     event = { "BufReadPost", "BufAdd", "BufNewFile" },
     dependencies = { "nvim-mini/mini.icons" },
     keys = {
-      { "<leader>bp", "<Cmd>BufferLineTogglePin<CR>", desc = "Toggle Pin" },
+      { "<leader>bp", "<Cmd>BufferLineTogglePin<CR>",            desc = "Toggle Pin" },
       { "<leader>bP", "<Cmd>BufferLineGroupClose ungrouped<CR>", desc = "Delete Non-Pinned Buffers" },
-      { "<leader>br", "<Cmd>BufferLineCloseRight<CR>", desc = "Delete Buffers to the Right" },
-      { "<leader>bl", "<Cmd>BufferLineCloseLeft<CR>", desc = "Delete Buffers to the Left" },
-      { "<S-h>", "<cmd>BufferLineCyclePrev<cr>", desc = "Prev Buffer" },
-      { "<S-l>", "<cmd>BufferLineCycleNext<cr>", desc = "Next Buffer" },
-      { "[b", "<cmd>BufferLineCyclePrev<cr>", desc = "Prev Buffer" },
-      { "]b", "<cmd>BufferLineCycleNext<cr>", desc = "Next Buffer" },
-      { "[B", "<cmd>BufferLineMovePrev<cr>", desc = "Move buffer prev" },
-      { "]B", "<cmd>BufferLineMoveNext<cr>", desc = "Move buffer next" },
-      { "<leader>bj", "<cmd>BufferLinePick<cr>", desc = "Pick Buffer" },
+      { "<leader>br", "<Cmd>BufferLineCloseRight<CR>",           desc = "Delete Buffers to the Right" },
+      { "<leader>bl", "<Cmd>BufferLineCloseLeft<CR>",            desc = "Delete Buffers to the Left" },
+      { "<S-h>",      "<cmd>BufferLineCyclePrev<cr>",            desc = "Prev Buffer" },
+      { "<S-l>",      "<cmd>BufferLineCycleNext<cr>",            desc = "Next Buffer" },
+      { "[b",         "<cmd>BufferLineCyclePrev<cr>",            desc = "Prev Buffer" },
+      { "]b",         "<cmd>BufferLineCycleNext<cr>",            desc = "Next Buffer" },
+      { "[B",         "<cmd>BufferLineMovePrev<cr>",             desc = "Move buffer prev" },
+      { "]B",         "<cmd>BufferLineMoveNext<cr>",             desc = "Move buffer next" },
+      { "<leader>bj", "<cmd>BufferLinePick<cr>",                 desc = "Pick Buffer" },
     },
     opts = {
       options = {
@@ -114,7 +114,7 @@ return {
         always_show_bufferline = false,
         diagnostics_indicator = function(_, _, diag)
           local ret = (diag.error and U.icons.diagnostics.Error .. diag.error .. " " or "")
-            .. (diag.warning and U.icons.diagnostics.Warn .. diag.warning or "")
+              .. (diag.warning and U.icons.diagnostics.Warn .. diag.warning or "")
           return vim.trim(ret)
         end,
         offsets = {
@@ -145,15 +145,6 @@ return {
           end)
         end,
       })
-    end,
-  },
-  {
-    "dchinmay2/alabaster.nvim",
-    lazy = false,
-    priority = 1000,
-    config = function()
-      vim.g.alabaster_floatborder = true
-      vim.cmd.colorscheme("habamax-diff") -- habamax + diffs legíveis (colors/habamax-diff.lua)
     end,
   },
 }

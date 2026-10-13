@@ -195,7 +195,7 @@ local function habamax_overrides()
 
   -- Diffs (vimdiff nativo, codediff, neogit) ficam em colors/habamax-diff.lua,
   -- camada aplicada depois destes overrides
-  set(0, "String", { fg = "#9ed99c" }) -- também alimenta o verde do neogit
+  set(0, "String", { fg = "#9ed99c" })   -- também alimenta o verde do neogit
   set(0, "@string", { link = "String" }) -- Treesitter strings
 
   debug_mode_hl()
@@ -210,7 +210,7 @@ local function alabaster_overrides()
   debug_mode_hl()
 end
 
-if vim.g.colors_name == "habamax" then
+if vim.g.colors_name == "habamax" or vim.g.colors_name == "habamax-diff" then
   habamax_overrides()
 end
 
@@ -328,12 +328,12 @@ local function delete_qf_items()
     vim.api.nvim_feedkeys(
       vim.api.nvim_replace_termcodes(
         "<esc>", -- what to escape
-        true, -- Vim leftovers
-        false, -- Also replace `<lt>`?
-        true -- Replace keycodes (like `<esc>`)?
+        true,    -- Vim leftovers
+        false,   -- Also replace `<lt>`?
+        true     -- Replace keycodes (like `<esc>`)?
       ),
-      "x", -- Mode flag
-      false -- Should be false, since we already `nvim_replace_termcodes()`
+      "x",       -- Mode flag
+      false      -- Should be false, since we already `nvim_replace_termcodes()`
     )
   end
 
