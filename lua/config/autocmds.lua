@@ -364,3 +364,57 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
   desc = "Quickfix tweaks",
 })
+
+-- -- -- sublinhado só nas janelas do diff
+-- -- local function set_hl()
+-- --   vim.api.nvim_set_hl(0, "CodeDiffCursorLine", { underline = true, sp = "#7aa2f7" })
+-- -- end
+-- -- set_hl()
+-- -- vim.api.nvim_create_autocmd("ColorScheme", { group = group, callback = set_hl })
+--
+-- local function is_codediff_buf(buf)
+--   return vim.api.nvim_buf_get_name(buf):find("^codediff:///") ~= nil
+-- end
+--
+-- -- retorna as janelas de diff da aba (revisões + arquivo real), ignorando painéis e floats
+-- local function diff_wins(tab)
+--   local wins, has_codediff = {}, false
+--   for _, win in ipairs(vim.api.nvim_tabpage_list_wins(tab)) do
+--     if vim.api.nvim_win_get_config(win).relative == "" then
+--       local buf = vim.api.nvim_win_get_buf(win)
+--       if is_codediff_buf(buf) then
+--         has_codediff = true
+--         table.insert(wins, win)
+--       elseif vim.bo[buf].buftype == "" and vim.api.nvim_buf_get_name(buf) ~= "" then
+--         table.insert(wins, win) -- lado da working tree
+--       end
+--     end
+--   end
+--   return has_codediff and wins or {}
+-- end
+--
+-- local function sync()
+--   local wins = diff_wins(0)
+--   if #wins < 2 then
+--     return -- modo inline ou aba sem codediff
+--   end
+--   for _, win in ipairs(wins) do
+--     vim.wo[win].scrollbind = true
+--     vim.wo[win].cursorbind = true
+--     vim.wo[win].cursorline = true
+--     vim.wo[win].cursorlineopt = "line"
+--     local whl = vim.wo[win].winhighlight
+--     if not whl:find("CursorLine:") then
+--       vim.wo[win].winhighlight = (whl == "" and "" or whl .. ",") .. "CursorLine:CodeDiffCursorLine"
+--     end
+--   end
+--   vim.cmd("syncbind")
+-- end
+--
+-- vim.api.nvim_create_autocmd({ "BufWinEnter", "WinEnter", "TabEnter" }, {
+--   group = group,
+--   callback = function()
+--     vim.api.nvim_set_hl(0, "CodeDiffCursorLine", { underline = true, sp = "#7aa2f7" })
+--     vim.schedule(sync)
+--   end,
+-- })

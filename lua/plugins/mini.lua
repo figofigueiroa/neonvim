@@ -62,13 +62,13 @@ return {
             local search = statusline.section_searchcount({ trunc_width = 75 })
 
             return statusline.combine_groups({
-              { hl = mode_hl, strings = { mode } },
+              { hl = mode_hl,                 strings = { mode } },
               { hl = "MiniStatuslineDevinfo", strings = { git, diff, diagnostics, lsp } },
               "%<", -- truncate point
               { hl = "MiniStatuslineFilename", strings = { filename } },
               "%=", -- right align
               { hl = "MiniStatuslineFileinfo", strings = { rest, fileinfo } },
-              { hl = mode_hl, strings = { search, location } },
+              { hl = mode_hl,                  strings = { search, location } },
             })
           end,
         },
@@ -170,6 +170,16 @@ return {
     keys = {
       {
         "<leader>e",
+        function()
+          if _G.MiniFiles == nil then
+            require("mini.files").setup()
+          end
+          require("mini.files").open()
+        end,
+        desc = "Explorer (mini.files)",
+      },
+      {
+        "-",
         function()
           if _G.MiniFiles == nil then
             require("mini.files").setup()

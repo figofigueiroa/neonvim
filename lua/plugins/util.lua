@@ -23,22 +23,11 @@ local function diff_branch()
 end
 
 return {
-
-  -- {
-  --   "willothy/flatten.nvim",
-  --   -- event = "TermOpen",
-  --   config = true,
-  --   -- or pass configuration with
-  --   -- opts = {  }
-  --   -- Ensure that it runs first to minimize delay when opening file from terminal
-  --   lazy = false,
-  --   priority = 1001,
-  -- },
   {
     "folke/persistence.nvim",
     event = "BufReadPre", -- só começa a rastrear quando você abre um arquivo
     opts = {
-      need = 1, -- só salva se houver ao menos 1 buffer de arquivo
+      need = 1,           -- só salva se houver ao menos 1 buffer de arquivo
       -- branch = true, -- opcional: uma sessão por branch do git
     },
     keys = {
@@ -76,13 +65,13 @@ return {
     "figofigueiroa/rest.nvim",
     ft = { "http" },
     keys = {
-      { "<leader>R", "", desc = "+Rest" },
-      { "<leader>Re", "<cmd>Rest env select<cr>", desc = "Select environment", ft = "http" },
-      { "<leader>Ro", "<cmd>Rest open<cr>", desc = "Open result pane", ft = "http" },
-      { "<leader>Rr", "<cmd>Rest run<cr>", desc = "Send the request", ft = "http" },
-      { "<leader>RR", "<cmd>Rest last<cr>", desc = "Replay the last request", ft = "http" },
+      { "<leader>R",  "",                          desc = "+Rest" },
+      { "<leader>Re", "<cmd>Rest env select<cr>",  desc = "Select environment",           ft = "http" },
+      { "<leader>Ro", "<cmd>Rest open<cr>",        desc = "Open result pane",             ft = "http" },
+      { "<leader>Rr", "<cmd>Rest run<cr>",         desc = "Send the request",             ft = "http" },
+      { "<leader>RR", "<cmd>Rest last<cr>",        desc = "Replay the last request",      ft = "http" },
       { "<leader>Rv", "<cmd>Rest vars select<cr>", desc = "Select vars for http session", ft = "http" },
-      { "<leader>Rl", "<cmd>Rest vars list<cr>", desc = "List vars for http session", ft = "http" },
+      { "<leader>Rl", "<cmd>Rest vars list<cr>",   desc = "List vars for http session",   ft = "http" },
     },
     dependencies = {
       "nvim-treesitter/nvim-treesitter",
@@ -98,5 +87,6 @@ return {
     keys = {
       { "<leader>gD", diff_branch, desc = "Diff Branch (CodeDiff)" },
     },
+    opts = { diff = { compute_moves = true }, }
   },
 }
