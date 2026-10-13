@@ -61,21 +61,13 @@ return {
             local location = statusline.section_location({ trunc_width = 75 })
             local search = statusline.section_searchcount({ trunc_width = 75 })
 
-            -- LSP progress nativo (Neovim 0.10+)
-            -- ponytail: spinner anima só quando a statusline redesenha (atividade);
-            -- sem timer dedicado — adicionar se quiser animação parado
-            local lsp_progress = vim.lsp.status()
-            if lsp_progress ~= "" then
-              lsp_progress = " " .. Snacks.util.spinner() .. " " .. lsp_progress
-            end
-
             return statusline.combine_groups({
               { hl = mode_hl, strings = { mode } },
               { hl = "MiniStatuslineDevinfo", strings = { git, diff, diagnostics, lsp } },
               "%<", -- truncate point
               { hl = "MiniStatuslineFilename", strings = { filename } },
               "%=", -- right align
-              { hl = "MiniStatuslineFileinfo", strings = { rest, lsp_progress, fileinfo } },
+              { hl = "MiniStatuslineFileinfo", strings = { rest, fileinfo } },
               { hl = mode_hl, strings = { search, location } },
             })
           end,
