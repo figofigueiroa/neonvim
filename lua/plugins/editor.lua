@@ -380,43 +380,6 @@ return {
         end,
         desc = "Colorschemes",
       },
-      -- -- LSP
-      -- {
-      --   "gd",
-      --   function()
-      --     Snacks.picker.lsp_definitions()
-      --   end,
-      --   desc = "Goto Definition",
-      -- },
-      -- {
-      --   "gD",
-      --   function()
-      --     Snacks.picker.lsp_declarations()
-      --   end,
-      --   desc = "Goto Declaration",
-      -- },
-      -- {
-      --   "gr",
-      --   function()
-      --     Snacks.picker.lsp_references()
-      --   end,
-      --   nowait = true,
-      --   desc = "References",
-      -- },
-      -- {
-      --   "gI",
-      --   function()
-      --     Snacks.picker.lsp_implementations()
-      --   end,
-      --   desc = "Goto Implementation",
-      -- },
-      -- {
-      --   "gy",
-      --   function()
-      --     Snacks.picker.lsp_type_definitions()
-      --   end,
-      --   desc = "Goto T[y]pe Definition",
-      -- },
       {
         "gai",
         function()
@@ -744,4 +707,42 @@ return {
     "esmuellert/codediff.nvim",
     cmd = "CodeDiff",
   },
+  -- Package name changed from `fff.nvim` to `fff`. If you installed fff.nvim before, clean with `:Lazy clean`
+  {
+    'dmtrKovalenko/fff',
+    build = function()
+      -- downloads a prebuilt binary or falls back to cargo build
+      require("fff.download").download_or_build_binary()
+    end,
+    -- for nixos:
+    -- build = "nix run .#release",
+    opts = {
+      debug = {
+        enabled = false,
+        show_scores = true,
+      },
+      layout = {
+        prompt_position = 'top', -- or 'top'
+
+        show_scrollbar = true,
+        show_file_count = true, -- false hides the matched/total file count next to the prompt
+      },
+    },
+    lazy = false, -- the plugin lazy-initialises itself
+    keys = {
+      { "<leader>ff", function() require('fff').find_files() end, desc = 'FFFind files' },
+      { "<leader>sg", function() require('fff').live_grep() end,  desc = 'LiFFFe grep' },
+      {
+        "fz",
+        function() require('fff').live_grep({ grep = { modes = { 'fuzzy', 'plain' } } }) end,
+        desc = 'Live fffuzy grep',
+      },
+      {
+        "<leader>sw",
+        function() require('fff').live_grep_under_cursor() end,
+        mode = { 'n', 'x' },
+        desc = 'Search current word / selection',
+      },
+    },
+  }
 }
