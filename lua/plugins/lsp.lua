@@ -80,19 +80,41 @@ return {
               },
               {
                 "gd",
-                function() Snacks.picker.lsp_definitions() end,
+                function()
+                  Snacks.picker.lsp_definitions()
+                end,
                 desc = "Goto Definition",
                 has = "definition",
               },
               {
                 "gr",
-                function() Snacks.picker.lsp_references() end,
+                function()
+                  Snacks.picker.lsp_references()
+                end,
                 desc = "References",
                 nowait = true,
               },
-              { "gI", function() Snacks.picker.lsp_implementations() end,  desc = "Goto Implementation" },
-              { "gy", function() Snacks.picker.lsp_type_definitions() end, desc = "Goto T[y]pe Definition" },
-              { "gD", function() Snacks.picker.lsp_declarations() end,     desc = "Goto Declaration" },
+              {
+                "gI",
+                function()
+                  Snacks.picker.lsp_implementations()
+                end,
+                desc = "Goto Implementation",
+              },
+              {
+                "gy",
+                function()
+                  Snacks.picker.lsp_type_definitions()
+                end,
+                desc = "Goto T[y]pe Definition",
+              },
+              {
+                "gD",
+                function()
+                  Snacks.picker.lsp_declarations()
+                end,
+                desc = "Goto Declaration",
+              },
               {
                 "K",
                 function()
@@ -198,18 +220,6 @@ return {
                   return Snacks.words.is_enabled()
                 end,
               },
-              -- {
-              --   "<leader>co",
-              --   LazyVim.lsp.action["source.organizeImports"],
-              --   desc = "Organize Imports",
-              --   has = "codeAction",
-              --   enabled = function(buf)
-              --     local code_actions = vim.tbl_filter(function(action)
-              --       return action:find("^source%.organizeImports%.?$")
-              --     end, LazyVim.lsp.code_actions({ bufnr = buf }))
-              --     return #code_actions > 0
-              --   end
-              -- },
             },
           },
           lua_ls = {
@@ -385,10 +395,10 @@ return {
 
           -- inlay hints
           if
-              opts.inlay_hints.enabled
-              and client:supports_method("textDocument/inlayHint", buf)
-              and vim.bo[buf].buftype == ""
-              and not vim.tbl_contains(opts.inlay_hints.exclude, vim.bo[buf].filetype)
+            opts.inlay_hints.enabled
+            and client:supports_method("textDocument/inlayHint", buf)
+            and vim.bo[buf].buftype == ""
+            and not vim.tbl_contains(opts.inlay_hints.exclude, vim.bo[buf].filetype)
           then
             vim.lsp.inlay_hint.enable(true, { bufnr = buf })
           end
