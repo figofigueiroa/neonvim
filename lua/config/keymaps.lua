@@ -242,7 +242,9 @@ vim.keymap.set("n", "<leader>m", function()
       vim.cmd("delmarks " .. table.concat(marks))
     end
   else
-    pcall(vim.cmd, "delmarks " .. char)
+    pcall(function()
+      vim.cmd("delmarks " .. char)
+    end)
   end
 
   U.refresh_marks(buf)
@@ -318,3 +320,11 @@ if vim.fn.has("unix") == 1 then
     U.send("https://claude.ai/new?prompt=")
   end, { desc = "Send to claude" })
 end
+
+vim.keymap.set("n", "<C-q>", function()
+  if vim.fn.reg_recording() ~= "" then
+    vim.api.nvim_feedkeys("q", "n", false)
+  end
+end, {
+  desc = "Stop macro recording",
+})
