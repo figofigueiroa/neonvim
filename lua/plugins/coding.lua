@@ -20,9 +20,7 @@ return {
     event = { "InsertEnter", "CmdlineEnter" },
     -- build = "cargo +nightly build --release",
     dependencies = {
-      -- "L3MON4D3/LuaSnip",
       "rafamadriz/friendly-snippets",
-      -- 'fang2hou/blink-copilot',
       "folke/lazydev.nvim",
     },
     opts = {
