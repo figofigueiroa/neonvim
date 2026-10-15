@@ -460,4 +460,31 @@ M.marks_on_line = function(buf, lnum)
   return res
 end
 
+local function url_encode(str)
+  if not str or str == "" then return nil end
+  return str:gsub("[^%w%-_%.~]", function(c)
+    return string.format("%%%02X", string.byte(c))
+  end)
+end
+
+function M.send(base_url)
+  local saved = vim.fn.getreg("z")
+  vim.cmd('noautocmd normal! "zy')
+  local text = vim.fn.getreg("z")
+  vim.fn.setreg("z", saved)
+
+  local encoded_text = url_encode(text)
+  if not encoded_text then
+    vim.notify("No text selected to send.", vim.log.levels.WARN)
+    return
+  end
+
+  local url = base_url .. encoded_text
+  if vim.ui.open then
+    vim.ui.open(url)
+  else
+    vim.fn.jobstart({ "xdg-open", url }, { detach = true })
+  end
+end
+
 return M

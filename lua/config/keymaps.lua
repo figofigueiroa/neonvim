@@ -267,3 +267,54 @@ vim.keymap.set("n", "dd", del_qf_item, { silent = true, buffer = true, desc = "R
 vim.keymap.set("v", "D", del_qf_item, { silent = true, buffer = true, desc = "Remove entry from QF" })
 
 vim.keymap.set("n", "<leader>bc", "<cmd>tcd %:h | pwd<cr>", { desc = "Auto Locate" })
+
+
+if vim.fn.has("win32") == 1 then
+  vim.keymap.set("x", "<leader>c??", function()
+    local url =
+    "https://m365.cloud.microsoft/chat?FORM=undexpand&fromcode=edgesidebar&redirectid=06d72d21-d28d-4318-8074-ce8d2623efbf&auth=2&es=SSR"
+
+    -- Procura o Edge no PATH e nos diretórios usuais de instalação.
+    local edge = vim.fn.exepath("msedge")
+
+    if edge == "" then
+      for _, variable in ipairs({
+        "ProgramFiles(x86)",
+        "ProgramFiles",
+        "LOCALAPPDATA",
+      }) do
+        local base = vim.fn.getenv(variable)
+        if type(base) == "string" then
+          local candidate = base .. "/Microsoft/Edge/Application/msedge.exe"
+          if vim.fn.executable(candidate) == 1 then
+            edge = candidate
+            break
+          end
+        end
+      end
+    end
+
+    if edge == "" then
+      vim.notify("Microsoft Edge não encontrado.", vim.log.levels.ERROR)
+      return
+    end
+
+    -- Copia a seleção visual para o clipboard do Windows.
+    vim.cmd('normal! "+y')
+
+    -- Sem shell: os caracteres & da URL são passados literalmente.
+    local job = vim.fn.jobstart({ edge, "--new-tab", url }, {
+      detach = true,
+    })
+
+    if job <= 0 then
+      vim.notify("Não foi possível iniciar o Edge.", vim.log.levels.ERROR)
+    end
+  end, { desc = "Copiar seleção e abrir Microsoft 365 Chat" })
+end
+
+if vim.fn.has("unix") == 1 then
+  vim.keymap.set("v", "<leader>c??", function()
+    U.send("https://claude.ai/new?prompt=")
+  end, { desc = "Send to claude" })
+end

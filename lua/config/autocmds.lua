@@ -101,6 +101,10 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
   end,
 })
 
+-- Set formatprg to jq for json files
+vim.api.nvim_create_autocmd("FileType",
+  { pattern = "json", callback = function() vim.api.nvim_set_option_value("formatprg", "jq", { scope = "local" }) end })
+
 -- Auto create dir when saving a file, in case some intermediate directory does not exist
 vim.api.nvim_create_autocmd({ "BufWritePre" }, {
   group = augroup("auto_create_dir"),
