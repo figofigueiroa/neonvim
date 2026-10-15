@@ -9,7 +9,7 @@ local debug_mode = U.debug_mode
 return {
   {
     "nvim-mini/mini.statusline",
-    event = "LazyFile",
+    event = { "BufReadPost", "BufNewFile" }, -- carrega junto com o buffer (lazy ft=*)
     config = function()
       local statusline = require("mini.statusline")
 
@@ -62,13 +62,13 @@ return {
             local search = statusline.section_searchcount({ trunc_width = 75 })
 
             return statusline.combine_groups({
-              { hl = mode_hl,                 strings = { mode } },
+              { hl = mode_hl, strings = { mode } },
               { hl = "MiniStatuslineDevinfo", strings = { git, diff, diagnostics, lsp } },
               "%<", -- truncate point
               { hl = "MiniStatuslineFilename", strings = { filename } },
               "%=", -- right align
               { hl = "MiniStatuslineFileinfo", strings = { rest, fileinfo } },
-              { hl = mode_hl,                  strings = { search, location } },
+              { hl = mode_hl, strings = { search, location } },
             })
           end,
         },
@@ -77,14 +77,14 @@ return {
   },
   {
     "nvim-mini/mini.statuscolumn",
-    event = "LazyFile",
+    event = { "BufReadPost", "BufNewFile" }, -- carrega junto com o buffer (lazy ft=*)
     config = function()
       require("mini.statuscolumn").setup()
     end,
   },
   {
     "nvim-mini/mini.ai",
-    event = "LazyFile",
+    event = { "BufReadPost", "BufNewFile" }, -- carrega junto com o buffer (lazy ft=*)
     config = function()
       local ai = require("mini.ai")
       local ai_opts = {
@@ -135,7 +135,7 @@ return {
   },
   {
     "nvim-mini/mini.jump",
-    event = "LazyFile",
+    event = "VeryLazy",
     config = function()
       require("mini.jump").setup()
     end,

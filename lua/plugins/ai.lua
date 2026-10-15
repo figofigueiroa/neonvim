@@ -5,7 +5,7 @@ return {
     "olimorris/codecompanion.nvim",
     enabled = U.is_win(),
     lazy = true,
-    event = "LazyFile",
+    event = { "BufReadPost", "BufNewFile" }, -- carrega junto com o buffer (lazy ft=*)
     dependencies = {
       "nvim-lua/plenary.nvim",
       "ravitemer/codecompanion-history.nvim",

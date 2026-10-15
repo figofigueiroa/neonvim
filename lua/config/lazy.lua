@@ -1,58 +1,71 @@
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not (vim.uv or vim.loop).fs_stat(lazypath) then
-  local lazyrepo = "https://github.com/folke/lazy.nvim.git"
-  local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
+local lazierPath = vim.fn.stdpath("data") .. "/lazier/lazier.nvim"
+if not (vim.uv or vim.loop).fs_stat(lazierPath) then
+  local repo = "https://github.com/jake-stewart/lazier.nvim.git"
+  local out = vim.fn.system({
+    "git",
+    "clone",
+    "--branch=stable-v2",
+    repo,
+    lazierPath,
+  })
   if vim.v.shell_error ~= 0 then
-    vim.api.nvim_echo({
-      { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
-      { out,                            "WarningMsg" },
-      { "\nPress any key to exit..." },
-    }, true, {})
-    vim.fn.getchar()
-    os.exit(1)
+    vim.api.nvim_echo({ {
+      "Failed to clone lazier.nvim:\n" .. out,
+      "Error",
+    } }, true, {})
   end
 end
-vim.opt.rtp:prepend(lazypath)
+vim.opt.runtimepath:prepend(lazierPath)
 
-require("config.options")  -- Load the lazy-plugins module
-require("config.autocmds") -- Load the lazy-plugins module
-require("config.keymaps")  -- Load the lazy-plugins module
-require("config.utils")    -- Load the lazy-plugins module
+require("lazier").setup("plugins", {
+  lazier = {
+    before = function()
+      -- function to run before the ui renders.
+      -- it is faster to require parts of your config here
+      -- since at this point they will be bundled and bytecode compiled.
+      -- eg: require("options")
+      --
+      require("config.options") -- Load the lazy-plugins module
+      require("config.autocmds") -- Load the lazy-plugins module
+    end,
 
-require("lazy").setup({
-  spec = {
-    { import = "plugins" },
+    after = function()
+      -- function to run after the ui renders.
+      -- eg: require("mappings")
+      require("config.keymaps") -- Load the lazy-plugins module
+      require("config.utils") -- Load the lazy-plugins module
+    end,
+
+    start_lazily = function()
+      -- function which returns whether lazy.nvim
+      -- should start delayed or not.
+      local nonLazyLoadableExtensions = {
+        zip = true,
+        tar = true,
+        gz = true,
+      }
+      local fname = vim.fn.expand("%")
+      return fname == ""
+        or vim.fn.isdirectory(fname) == 0 and not nonLazyLoadableExtensions[vim.fn.fnamemodify(fname, ":e")]
+    end,
+
+    -- whether to bundle & byte code compile parts of the
+    -- neovim lua api. this can be a boolean or custom list of modules.
+    compile_api = true,
+
+    -- whether plugins should be included in the bytecode
+    -- compiled bundle. this will make your startup slower.
+    bundle_plugins = false,
+
+    -- whether to automatically generate lazy loading config
+    -- by identifying the mappings set when the plugin loads
+    generate_lazy_mappings = true,
+
+    -- automatically rebundle and compile nvim config when it changes
+    -- if set to false then you will need to :LazierClear manually
+    detect_changes = true,
   },
-  defaults = {
-    -- set to `true` to have all your custom plugins lazy-loaded by default.
-    lazy = false,
-    -- It's recommended to leave version=false for now, since a lot the plugin that support versioning,
-    -- have outdated releases, which may break your Neovim install.
-    version = false, -- always use the latest git commit
-    -- version = "*", -- try installing the latest stable version for plugins that support semver
-  },
-  install = { colorscheme = { "habamax" } },
-  checker = {
-    enabled = true, -- check for plugin updates periodically
-    notify = false, -- notify on update
-  },                -- automatically check for plugin updates
-  performance = {
-    rtp = {
-      -- disable some rtp plugins
-      disabled_plugins = {
-        "gzip",
-        -- "matchit",
-        -- "matchparen",
-        "netrwPlugin",
-        "tarPlugin",
-        "tohtml",
-        "tutor",
-        "zipPlugin",
-        "editorconfig", -- runtime/plugin/editorconfig.lua
-        "shada",        -- runtime/plugin/shada.lua (ft-shada)
-        "spellfile",    -- runtime/plugin/spellfile.lua
-        "dir",          -- runtime/plugin/dir.lua (novo listador de diretórios)
-      },
-    },
-  },
+
+  -- your usual lazy.nvim config goes here
+  -- ...
 })

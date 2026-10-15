@@ -20,7 +20,7 @@ return {
     -- ponytail: sem VeryLazy, starts sem arquivo (dashboard) não carregam TS;
     -- se algum buffer abrir sem highlight (FileType disparou antes do LazyFile),
     -- voltar para event = { "LazyFile", "VeryLazy" }
-    event = "LazyFile",
+    event = { "BufReadPost", "BufNewFile" },
     cmd = { "TSUpdate", "TSInstall", "TSLog", "TSUninstall" },
     opts_extend = { "ensure_installed" },
     opts = {
@@ -108,8 +108,8 @@ return {
           local function enabled(feat, query)
             local f = opts[feat] or {}
             return f.enable ~= false
-                and not (type(f.disable) == "table" and vim.tbl_contains(f.disable, lang))
-                and U.have(ft, query)
+              and not (type(f.disable) == "table" and vim.tbl_contains(f.disable, lang))
+              and U.have(ft, query)
           end
 
           -- highlighting
@@ -134,7 +134,7 @@ return {
   {
     "nvim-treesitter/nvim-treesitter-textobjects",
     branch = "main",
-    event = "LazyFile",
+    event = { "BufReadPost", "BufNewFile" }, -- carrega junto com o buffer (lazy ft=*)
     opts = {
       move = {
         enable = true,
