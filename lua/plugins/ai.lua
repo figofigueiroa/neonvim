@@ -9,9 +9,14 @@ return {
     dependencies = {
       "nvim-lua/plenary.nvim",
       "ravitemer/codecompanion-history.nvim",
-      "cairijun/codecompanion-agentskills.nvim",
     },
     opts = {
+      skills = {
+        dirs = {
+          "~/.config/codecompanion/skills", -- Personal skills
+        },
+      },
+      language = "Portuguese (Brazil)",
       interactions = {
         cli = {
           agent = "copilot",
@@ -27,6 +32,7 @@ return {
             ["image"] = { opts = { provider = "snacks" } },
             ["mcp"] = { opts = { provider = "snacks" } },
           },
+          autoload = { "ponytail" },
         },
       },
       display = {
@@ -42,13 +48,6 @@ return {
             auto_generate_title = true,
             title_generation_opts = {
               adapter = "copilot",
-            },
-          },
-        },
-        agentskills = {
-          opts = {
-            paths = {
-              { "~/.config/nvim/skills", recursive = true },
             },
           },
         },
@@ -81,7 +80,7 @@ return {
         silent = false,
         desc = "CodeCompanion: Inline Prompt",
       },
-      { "<leader>al", "<cmd>CodeCompanionCLI<cr>", mode = "n", desc = "CodeCompanion: Open CLI" },
+      { "<leader>al", "<cmd>CodeCompanionCLI<cr>",         mode = "n",          desc = "CodeCompanion: Open CLI" },
       {
         "<leader>ax",
         function()
