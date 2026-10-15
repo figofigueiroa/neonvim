@@ -8,35 +8,12 @@ return {
     opts = {
       library = {
         { path = "${3rd}/luv/library", words = { "vim%.uv" } },
-        { path = "nvim-lspconfig", words = { "lspconfig.settings" } },
-        { path = "lazy.nvim", words = { "LazyVim" } },
-        { path = "snacks.nvim", words = { "Snacks" } },
+        { path = "nvim-lspconfig",     words = { "lspconfig.settings" } },
+        { path = "lazy.nvim",          words = { "LazyVim" } },
+        { path = "snacks.nvim",        words = { "Snacks" } },
       },
     },
   },
-  -- {
-  --   "L3MON4D3/LuaSnip",
-  --   lazy = true,
-  --   build = function(plugin)
-  --     -- `make install_jsregexp` is unavailable on Windows and requires make.
-  --     if vim.fn.has("win32") ~= 1 and vim.fn.executable("make") == 1 then
-  --       vim.fn.system({ "make", "-C", plugin.dir, "install_jsregexp" })
-  --     end
-  --   end,
-  --   dependencies = {
-  --     {
-  --       "rafamadriz/friendly-snippets",
-  --       config = function()
-  --         require("luasnip.loaders.from_vscode").lazy_load()
-  --         require("luasnip.loaders.from_vscode").lazy_load({ paths = { vim.fn.stdpath("config") .. "/snippets" } })
-  --       end,
-  --     },
-  --   },
-  --   opts = {
-  --     history = true,
-  --     delete_check_events = "TextChanged",
-  --   },
-  -- },
   {
     "saghen/blink.cmp",
     version = "1.*",
@@ -69,8 +46,8 @@ return {
           draw = {
             columns = {
               { "source_name" },
-              { "label", "label_description", gap = 1 },
-              { "kind_icon", "kind", gap = 1 },
+              { "label",      "label_description", gap = 1 },
+              { "kind_icon",  "kind",              gap = 1 },
             },
           },
         },
@@ -108,7 +85,6 @@ return {
   },
   {
     "ThePrimeagen/refactoring.nvim",
-    dependencies = { "lewis6991/async.nvim", lazy = true },
     keys = {
       { "<leader>r", "", desc = "+refactor", mode = { "n", "x" } },
       {

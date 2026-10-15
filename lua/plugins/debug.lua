@@ -89,9 +89,9 @@ return {
       -- This might be unwanted if you already use Esc for ":noh"
       vim.keymap.set("t", "<C-\\>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
 
-      dm.keys.get("t").key = "b" -- remap x key in debug mode to y
-      dm.keys.get("m").key = "i" -- remap x key in debug mode to y
-      dm.keys.get("q").key = "O" -- remap x key in debug mode to y
+      dm.keys.get("t").key = "b"                -- remap x key in debug mode to y
+      dm.keys.get("m").key = "i"                -- remap x key in debug mode to y
+      dm.keys.get("q").key = "O"                -- remap x key in debug mode to y
 
       dm.plugins.osv_integration.enabled = true -- needed if you want to debug neovim lua code
       -- local dap = require("dap")
