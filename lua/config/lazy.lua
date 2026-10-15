@@ -1,10 +1,10 @@
 local lazierPath = vim.fn.stdpath("data") .. "/lazier/lazier.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazierPath) then
-  local repo = "https://github.com/jake-stewart/lazier.nvim.git"
+  local repo = "https://github.com/figofigueiroa/lazier.nvim.git"
   local out = vim.fn.system({
     "git",
     "clone",
-    "--branch=stable-v2",
+    "--branch=feat/windows",
     repo,
     lazierPath,
   })
@@ -25,7 +25,7 @@ require("lazier").setup("plugins", {
       -- since at this point they will be bundled and bytecode compiled.
       -- eg: require("options")
       --
-      require("config.options") -- Load the lazy-plugins module
+      require("config.options")  -- Load the lazy-plugins module
       require("config.autocmds") -- Load the lazy-plugins module
     end,
 
@@ -33,7 +33,7 @@ require("lazier").setup("plugins", {
       -- function to run after the ui renders.
       -- eg: require("mappings")
       require("config.keymaps") -- Load the lazy-plugins module
-      require("config.utils") -- Load the lazy-plugins module
+      require("config.utils")   -- Load the lazy-plugins module
     end,
 
     start_lazily = function()
@@ -46,7 +46,7 @@ require("lazier").setup("plugins", {
       }
       local fname = vim.fn.expand("%")
       return fname == ""
-        or vim.fn.isdirectory(fname) == 0 and not nonLazyLoadableExtensions[vim.fn.fnamemodify(fname, ":e")]
+          or vim.fn.isdirectory(fname) == 0 and not nonLazyLoadableExtensions[vim.fn.fnamemodify(fname, ":e")]
     end,
 
     -- whether to bundle & byte code compile parts of the

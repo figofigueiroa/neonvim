@@ -9,7 +9,6 @@ return {
     dependencies = {
       "nvim-lua/plenary.nvim",
       "ravitemer/codecompanion-history.nvim",
-      "cairijun/codecompanion-agentskills.nvim",
     },
     opts = {
       interactions = {
@@ -45,13 +44,6 @@ return {
             },
           },
         },
-        agentskills = {
-          opts = {
-            paths = {
-              { "~/.config/nvim/skills", recursive = true },
-            },
-          },
-        },
       },
     },
     keys = {
@@ -81,7 +73,7 @@ return {
         silent = false,
         desc = "CodeCompanion: Inline Prompt",
       },
-      { "<leader>al", "<cmd>CodeCompanionCLI<cr>", mode = "n", desc = "CodeCompanion: Open CLI" },
+      { "<leader>al", "<cmd>CodeCompanionCLI<cr>",         mode = "n",          desc = "CodeCompanion: Open CLI" },
       {
         "<leader>ax",
         function()
