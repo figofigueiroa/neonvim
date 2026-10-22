@@ -133,13 +133,13 @@ return {
       })
     end,
   },
-  {
-    "nvim-mini/mini.jump",
-    event = "LazyFile",
-    config = function()
-      require("mini.jump").setup()
-    end,
-  },
+  -- {
+  --   "nvim-mini/mini.jump",
+  --   event = "LazyFile",
+  --   config = function()
+  --     require("mini.jump").setup()
+  --   end,
+  -- },
   {
     "nvim-mini/mini.surround",
     keys = {
